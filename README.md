@@ -74,7 +74,9 @@ If your challenge doesn't match any of the examples above, such as a game hackin
 
 Each member of the team will create either a write-up or a video walkthrough, showing how to solve the challenge that was created by one of their teammates.
 
-A write-up is a step-by-step guide that shows how to solve the challenge, often with screenshots of every step along the way.  A video walkthrough is similar, but a screen capture of the process of solving it.  In both cases, it is recommended that you fully solve the challenge before you attempt the write-up.  However, keep notes of what commands you used as you solve the challenge, to make it easier to create the write-up/walkthrough.
+A write-up is a step-by-step guide that shows how to solve the challenge, often with screenshots of every step along the way.  A video walkthrough is similar, but a screen capture of the process of solving it.  In both cases, it is recommended that you fully solve the challenge before you attempt the write-up.  However, keep notes of what commands you used as you solve the challenge, to make it easier to create the write-up/walkthrough.  The final write-up will be in its own folder, in a file named `WRITEUP.md` within that folder.  Any supplemental files needed as part of your write-up will be included in this folder, also.
+
+If you are doing a video walkthrough, then you will create a file `WALKTHROUGH_VIDEO.md` file within your folder, instead.  This file will contain a link to your walkthrough video.  If you are ok with your walkthrough being made public, I suggest you post it using YouTube.  If you do not want it to be publicly accessible, then I suggest that you use a Google Drive link for your video.
 
 _**Note:**  Team members cannot create a write-up or video walkthrough of their own challenge.  They must solve one of the challenges by the other team member._
 
@@ -86,6 +88,8 @@ In the final week of classes, each team will choose one of their challenges to h
 2. An overview of how to exploit this vulnerability (~2 mins)
 3. A quick demonstration of exploitation of the vulnerability (~2 mins)
 4. A description of how to protect against this vulnerability (~2 mins)
+
+Any slides or other materials should be made available, either by putting the files into the `presentation` folder, and/or by providing a link to them from a `PRESENTATION.md` file within that folder, as part of your submission.
 
 _**Note:** Since all members of the group will be required to participate in this presentation, it makes sense that all of the challenges created by that team are part of the same category._
 
