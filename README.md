@@ -7,7 +7,7 @@ Please add the names and GitHub usernames of all group members, as of the time o
 
 | #  | Full Name            | GitHub Username |
 | -- | -------------------- | --------------- |
-| 1  | Daniyal Abbas Lilani      | [DaniyalLilani](https://github.com/sunnypatell/)       |
+| 1  | Daniyal Abbas Lilani      | [DaniyalLilani](https://github.com/daniyallilani/)       |
 | 2  | Sunny Patel        | [sunnypatell](https://github.com/sunnypatell/)       |
 | 3  | Robert Pianezza        | MagneticZebra       |
 | 4  | Ajay something        | username4       |
