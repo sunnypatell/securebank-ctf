@@ -1,10 +1,38 @@
+"use client"
+
+import type React from "react"
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+
 export default function Login() {
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const router = useRouter()
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    // Check hardcoded admin credentials
+    if (username === "admin" && password === "admin") {
+      // Redirect to dashboard
+      router.push("/dashboard")
+    } else {
+      setError("Invalid username or password")
+    }
+  }
+
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
       <div className="w-full max-w-md p-8 bg-gray-800 rounded-lg shadow-lg">
         <h1 className="text-3xl font-bold mb-6 text-center">Login</h1>
 
-        <form className="space-y-6">
+        {error && (
+          <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-2 rounded-md mb-6">{error}</div>
+        )}
+
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-2">
             <label htmlFor="username" className="block text-sm font-medium text-gray-300">
               Username
@@ -12,6 +40,8 @@ export default function Login() {
             <input
               type="text"
               id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
               placeholder="Enter your username"
             />
@@ -24,6 +54,8 @@ export default function Login() {
             <input
               type="password"
               id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
               placeholder="Enter your password"
             />
