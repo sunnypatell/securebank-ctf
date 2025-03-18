@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "SecureBank",
-  description: "Banking application",
+  description: "Banking application - CTF Final Project - CSCI 3540U",
 }
 
 export default function RootLayout({
