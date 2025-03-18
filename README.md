@@ -11,7 +11,7 @@ Please add the names and GitHub usernames of all group members, as of the time o
 | 2  | Sunny Patel        | [sunnypatell](https://github.com/sunnypatell/)       |
 | 3  | Robert Pianezza        | MagneticZebra       |
 | 4  | Ajay something        | username4       |
-| 4  | Rija Baig        | username5       |
+| 4  | Rija Baig        | rijabaig       |
 
 ## How to Sign-Up
 
