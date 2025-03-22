@@ -14,20 +14,17 @@ db.exec(`
 
   CREATE TABLE IF NOT EXISTS Transactions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    FROM VARCHAR(1000),
-    TO VARCHAR(1000),
-    AMOUNT INTEGER
+    sender VARCHAR(1000), 
+    recipient VARCHAR(1000),  
+    amount INTEGER
   );
 
-  CREATE TABLE IF NOT EXISTS Comments ( 
+  CREATE TABLE IF NOT EXISTS Comments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    FROM VARCHAR(1000),
-    TO VARCHAR(1000),
-    AMOUNT INTEGER
+    commenter VARCHAR(1000), 
+    recipient VARCHAR(1000),  
+    feedback TEXT
   );
-
-
-
 `);
 
 export default db;

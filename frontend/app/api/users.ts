@@ -1,6 +1,7 @@
 import {NextApiRequest, NextApiResponse } from 'next';
 import nextConnect from 'next-connect';
-import db from '../database/db'; 
+import db from '../../database/db'; 
+
 // LATER, will add some basic filtering for requests coming in
 const handler = nextConnect();
 

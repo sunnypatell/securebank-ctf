@@ -1,27 +1,30 @@
-"use client"
-
-import type React from "react"
-
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const router = useRouter()
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    // Check hardcoded admin credentials
-    if (username === "admin" && password === "admin") {
-      // Redirect to dashboard
-      router.push("/dashboard")
+    const response = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      router.push("/dashboard"); // Redirect on successful login
     } else {
-      setError("Invalid username or password")
+      setError("Invalid username or password");
     }
-  }
+  };
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
@@ -29,7 +32,9 @@ export default function Login() {
         <h1 className="text-3xl font-bold mb-6 text-center">Login</h1>
 
         {error && (
-          <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-2 rounded-md mb-6">{error}</div>
+          <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-2 rounded-md mb-6">
+            {error}
+          </div>
         )}
 
         <form className="space-y-6" onSubmit={handleSubmit}>
@@ -82,6 +87,5 @@ export default function Login() {
         </div>
       </div>
     </main>
-  )
+  );
 }
-
