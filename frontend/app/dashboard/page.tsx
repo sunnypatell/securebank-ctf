@@ -48,7 +48,7 @@ export default function Dashboard() {
         {/* Welcome Section */}
         <div className="px-4 py-6 sm:px-0">
           <div className="border-4 border-dashed border-gray-700 rounded-lg p-6 mb-6">
-            <h1 className="text-2xl font-bold mb-4">Welcome, Admin!</h1>
+          <h1 className="text-2xl font-bold mb-4">Welcome, you are now logged in!</h1>
             <p className="text-gray-300">
               This is your secure banking dashboard. You can manage transactions, view feedback, and more.
             </p>

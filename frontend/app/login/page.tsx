@@ -20,7 +20,7 @@ export default function Login() {
     const data = await response.json();
 
     if (data.success) {
-      router.push("/dashboard"); // Redirect on successful login
+      router.push(`/dashboard?username=${username}`); // Redirect on successful login
     } else {
       setError("Invalid username or password");
     }
