@@ -20,11 +20,12 @@ db.exec(`
     amount INTEGER
   );
 
-  CREATE TABLE IF NOT EXISTS Comments (
+  CREATE TABLE IF NOT EXISTS feedback (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    commenter VARCHAR(1000), 
-    recipient VARCHAR(1000),  
-    feedback TEXT
+    user TEXT NOT NULL,
+    message TEXT NOT NULL,
+    date TEXT DEFAULT CURRENT_TIMESTAMP,
+    read BOOLEAN DEFAULT 0
   );
 `);
 
