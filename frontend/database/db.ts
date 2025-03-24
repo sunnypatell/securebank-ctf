@@ -20,13 +20,6 @@ db.exec(`
     amount INTEGER
   );
 
-  CREATE TABLE IF NOT EXISTS Comments (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    commenter VARCHAR(1000), 
-    recipient VARCHAR(1000),  
-    feedback TEXT
-  );
-
   CREATE TABLE IF NOT EXISTS feedback (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user TEXT NOT NULL,
