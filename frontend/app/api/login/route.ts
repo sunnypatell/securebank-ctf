@@ -19,6 +19,13 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "All fields are required" }, { status: 400 });
     }
 
+    const illegalChars = /['"%;#*\\]/g;
+
+    if (illegalChars.test(username) || illegalChars.test(password)) {
+        return NextResponse.json({ error: "Illegal characters detected, are you trying to commit an Illegal SQL Injection little Beta??" }, { status: 400 });
+    }
+
+
     try {
         const query = `SELECT * FROM Users WHERE username = '${username}' AND password = '${password}'`;
         const user = db.prepare(query).get();
