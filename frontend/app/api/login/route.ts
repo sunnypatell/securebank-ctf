@@ -34,28 +34,3 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Error during login" }, { status: 500 });
     }
 }
-
-
-
-
-// PUT to register a new user
-export async function PUT(req: Request) {
-    try {
-        const { username, password } = await req.json();
-
-        if (!username || !password) {
-            return NextResponse.json({ error: "All fields are required" }, { status: 400 });
-        }
-
-        const query = `INSERT INTO Users (username, password, role) VALUES ('${username}', '${password}', 'user')`;
-
-        try {
-            const result = db.prepare(query).run();
-            return NextResponse.json({ success: true, userId: result.lastInsertRowid });
-        } catch (error) {
-            return NextResponse.json({ error: "An error occurred while adding the user" }, { status: 500 });
-        }
-    } catch (error) {
-        return NextResponse.json({ error: "Invalid request data" }, { status: 500 });
-    }
-}
