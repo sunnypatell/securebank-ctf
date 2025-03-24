@@ -1,27 +1,31 @@
 import { NextResponse } from "next/server";
-import db from "../../../database/db"; // Ensure correct path
+import db from "../../../database/db";  
 
 export async function POST(req: Request) {
-    try {
-        const body = await req.json();
-        console.log("Received Data:", body); // Debugging
-
-        const { user, message } = body;
-
-        if (!user || !message) {
-            console.error("Missing fields:", { user, message });
-            return NextResponse.json({ error: "All fields are required" }, { status: 400 });
-        }
-
-        // Vulnerable SQL Injection Query
-        const query = `INSERT INTO Comments (commenter, recipient, feedback) VALUES ('${user}', 'admin', '${message}')`;
-
-        console.log("Executing Query:", query); // Debugging
-        db.prepare(query).run();
-
-        return NextResponse.json({ success: true, message: "Feedback submitted!" });
-    } catch (error) {
-        console.error("SQL Error:", error);
-        //return NextResponse.json({ error: error.message }, { status: 500 }); // Return actual error message
+  try {
+    const { user, message } = await req.json();
+    
+    if (!user || !message) {
+      return NextResponse.json({ error: "User and message are required" }, { status: 400 });
     }
+
+    const stmt = db.prepare("INSERT INTO feedback (user, message, date, read) VALUES (?, ?, CURRENT_TIMESTAMP, ?)");
+    stmt.run(user, message, 0);
+
+    return NextResponse.json({ message: "Feedback submitted successfully" }); // Always return JSON
+  } catch (error) {
+    console.error("Database error:", error);
+    return NextResponse.json({ error: "Failed to submit feedback" }, { status: 500 });
+  }
 }
+
+export async function GET() {
+  try {
+    const feedbacks = db.prepare("SELECT * FROM feedback ORDER BY date DESC").all();
+    return NextResponse.json({ feedbacks });
+  } catch (error) {
+    console.error("Database error:", error);
+    return NextResponse.json({ feedbacks: [] }, { status: 500 }); // Ensure JSON is always returned
+  }
+}
+

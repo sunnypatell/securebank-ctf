@@ -26,6 +26,7 @@ export async function POST(req: Request) {
         console.log(user);
 
         if (user) {
+            
             return NextResponse.json({ success: true, message: "Login successful!", user });
         } else {
             return NextResponse.json({ error: "Invalid username or password" }, { status: 401 });

@@ -26,6 +26,14 @@ db.exec(`
     recipient VARCHAR(1000),  
     feedback TEXT
   );
+
+  CREATE TABLE IF NOT EXISTS feedback (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user TEXT NOT NULL,
+    message TEXT NOT NULL,
+    date TEXT DEFAULT CURRENT_TIMESTAMP,
+    read BOOLEAN DEFAULT 0
+  );
 `);
 
 // Insert a hardcoded admin user if none exists
