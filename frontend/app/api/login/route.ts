@@ -26,11 +26,13 @@ export async function POST(req: Request) {
         console.log(user);
 
         if (user) {
-            return NextResponse.json({ success: true, message: "Login successful!", user });
+            console.log("success", query)
+            return NextResponse.json({ success: true, message: "Login successful!", user }, {status: 200});
         } else {
-            return NextResponse.json({ error: "Invalid username or password" }, { status: 401 });
+            console.log("Invalid user/pass", query)
+            return NextResponse.json({error: "SQlite: Invalid username or password", user}, { status: 401 });
         }
-    } catch (error) {
-        return NextResponse.json({ error: "Error during login" }, { status: 500 });
+    } catch (error: any) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

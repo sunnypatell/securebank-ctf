@@ -42,9 +42,11 @@ export default function Login() {
             <label htmlFor="username" className="block text-sm font-medium text-gray-300">
               Username
             </label>
-            <input
+            <input 
               type="text"
               id="username"
+              pattern="^[^#\-%*]*$" // Step 1 is to see this and try to bypass with burp, this will work since its only a client side check
+              title="Input cannot contain: -, #, *, or %" 
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
@@ -59,6 +61,8 @@ export default function Login() {
             <input
               type="password"
               id="password"
+              pattern="^[^#\-%*]*$" 
+              title="Input cannot contain: -, #, *, or %"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
