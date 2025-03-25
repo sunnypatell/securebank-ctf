@@ -160,6 +160,7 @@ export default function Feedback() {
                 <div>
                   <span className="font-medium">{feedback.user}</span>
                   <p className="text-gray-300">{feedback.message}</p>
+                  <p className="text-gray-400 text-sm">{new Date(feedback.date).toLocaleString()}</p>
                 </div>
                 {role === "admin" && (
                   <button onClick={() => handleDelete(feedback.id)} className="bg-red-500 text-white px-2 py-1 rounded">
