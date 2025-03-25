@@ -14,24 +14,36 @@ interface Feedback {
 export default function Feedback() {
   const [user, setUser] = useState("");
   const [message, setMessage] = useState("");
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]); // Apply correct type
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
 
   useEffect(() => {
+    fetchUserSession(); // Get logged-in user from session cookie
     fetchFeedbacks();
   }, []);
+
+  // Fetch logged-in user from session cookie
+  const fetchUserSession = async () => {
+    try {
+      const response = await fetch("/api/get-session");
+      const data = await response.json();
+      if (data.username) {
+        setUser(data.username); // Set username from session
+      } else {
+        console.error("No user session found");
+      }
+    } catch (error) {
+      console.error("Error fetching user session:", error);
+    }
+  };
 
   const fetchFeedbacks = async () => {
     try {
       const response = await fetch("/api/feedback");
-  
       if (!response.ok) {
-        const errorText = await response.text(); // Get raw response
-        console.error("Error fetching feedbacks:", errorText);
+        console.error("Error fetching feedbacks:", await response.text());
         return;
       }
-  
       const data = await response.json();
-      
       if (Array.isArray(data.feedbacks)) {
         setFeedbacks(data.feedbacks);
       } else {
@@ -44,33 +56,35 @@ export default function Feedback() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-  
+
+    if (!user) {
+      alert("Error: No logged-in user found.");
+      return;
+    }
+
     try {
       const response = await fetch("/api/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user, message }),
       });
-  
-      // Check if response is empty or invalid
+
       if (!response.ok) {
-        const errorText = await response.text(); // Get raw response
-        console.error("Error response:", errorText);
-        alert("Error submitting feedback: " + errorText);
+        console.error("Error submitting feedback:", await response.text());
+        alert("Error submitting feedback.");
         return;
       }
-  
-      const data = await response.json(); // Now safely parse JSON
+
+      const data = await response.json();
       alert(data.message);
-  
-      setUser("");
-      setMessage("");
-      fetchFeedbacks(); // Refresh the feedback list
+
+      setMessage(""); // Clear message field
+      fetchFeedbacks(); // Refresh feedback list
     } catch (error) {
       console.error("Submit error:", error);
       alert("An error occurred while submitting feedback.");
     }
-  };  
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -98,18 +112,7 @@ export default function Feedback() {
         <div className="mb-6 bg-gray-800 p-4 rounded-lg shadow">
           <h2 className="text-lg font-medium mb-4">Leave Feedback</h2>
           <form className="space-y-4" onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="user" className="block text-sm font-medium text-gray-400 mb-1">Your Name</label>
-              <input
-                id="user"
-                type="text"
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-                placeholder="Enter your name"
-                value={user}
-                onChange={(e) => setUser(e.target.value)}
-              />
-            </div>
-
+            {}
             <div>
               <label htmlFor="message" className="block text-sm font-medium text-gray-400 mb-1">Your Message</label>
               <textarea

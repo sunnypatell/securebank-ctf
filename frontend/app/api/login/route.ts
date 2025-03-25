@@ -41,7 +41,6 @@ export async function POST(req: Request) {
             console.log("success", query)
             const userSession = { username: user.username };
             
-            // Set a session cookie
             (await
                 // Set a session cookie
                 cookies()).set("session", JSON.stringify(userSession), {
