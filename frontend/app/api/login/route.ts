@@ -41,7 +41,6 @@ export async function POST(req: Request) {
         if (user) {
             console.log("success", query);
             
-            // Store username & role in session
             (await
                 // Store username & role in session
                 cookies()).set("session", JSON.stringify({ username: user.username, role: user.role }), {

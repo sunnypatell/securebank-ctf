@@ -38,3 +38,33 @@ export async function GET() {
     return NextResponse.json({ feedbacks: [] }, { status: 500 });
   }
 }
+
+// DELETE feedback (Admins only)
+export async function DELETE(req: Request) {
+  try {
+      const userSession = (await cookies()).get("session");
+
+      if (!userSession) {
+          return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+      }
+
+      const user = JSON.parse(userSession.value);
+
+      if (user.role !== "admin") {
+          return NextResponse.json({ error: "Permission denied. Only admins can delete feedback." }, { status: 403 });
+      }
+
+      const { id } = await req.json();
+      if (!id) {
+          return NextResponse.json({ error: "Feedback ID is required" }, { status: 400 });
+      }
+
+      const stmt = db.prepare("DELETE FROM feedback WHERE id = ?");
+      stmt.run(id);
+
+      return NextResponse.json({ message: "Feedback deleted successfully!" }, { status: 200 });
+  } catch (error) {
+      console.error("Database error:", error);
+      return NextResponse.json({ error: "Failed to delete feedback" }, { status: 500 });
+  }
+}

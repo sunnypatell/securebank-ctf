@@ -10,7 +10,7 @@ export async function GET() {
 
     try {
         const user = JSON.parse(userSession.value);
-        return NextResponse.json({ username: user.username });
+        return NextResponse.json({ username: user.username, role: user.role });
     } catch (error) {
         return NextResponse.json({ error: "Invalid session data" }, { status: 500 });
     }

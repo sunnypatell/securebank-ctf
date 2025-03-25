@@ -13,21 +13,23 @@ interface Feedback {
 
 export default function Feedback() {
   const [user, setUser] = useState("");
+  const [role, setRole] = useState(""); // Store user role
   const [message, setMessage] = useState("");
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
 
   useEffect(() => {
-    fetchUserSession(); // Get logged-in user from session cookie
+    fetchUserSession();
     fetchFeedbacks();
   }, []);
 
-  // Fetch logged-in user from session cookie
+  // Fetch logged-in user and role from session
   const fetchUserSession = async () => {
     try {
       const response = await fetch("/api/get-session");
       const data = await response.json();
       if (data.username) {
-        setUser(data.username); // Set username from session
+        setUser(data.username);
+        setRole(data.role); // Store role
       } else {
         console.error("No user session found");
       }
@@ -86,6 +88,26 @@ export default function Feedback() {
     }
   };
 
+  // Handle delete feedback (Admins only)
+  const handleDelete = async (id: number) => {
+    try {
+        const response = await fetch("/api/feedback", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id }),
+        });
+
+        if (!response.ok) {
+            console.error("Error deleting feedback:", await response.text());
+            return;
+        }
+
+        fetchFeedbacks(); // Refresh the list
+    } catch (error) {
+        console.error("Delete error:", error);
+    }
+};
+
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <nav className="bg-gray-800 border-b border-gray-700">
@@ -112,7 +134,6 @@ export default function Feedback() {
         <div className="mb-6 bg-gray-800 p-4 rounded-lg shadow">
           <h2 className="text-lg font-medium mb-4">Leave Feedback</h2>
           <form className="space-y-4" onSubmit={handleSubmit}>
-            {}
             <div>
               <label htmlFor="message" className="block text-sm font-medium text-gray-400 mb-1">Your Message</label>
               <textarea
@@ -125,26 +146,27 @@ export default function Feedback() {
               ></textarea>
             </div>
 
-            <div>
-              <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md">
-                Submit Feedback
-              </button>
-            </div>
+            <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md">
+              Submit Feedback
+            </button>
           </form>
         </div>
 
         <div className="space-y-4">
           <h2 className="text-lg font-medium">Recent Feedback</h2>
           {feedbacks.map((feedback) => (
-            <div key={feedback.id} className={`bg-gray-800 p-4 rounded-lg shadow border-l-4 ${feedback.read ? "border-gray-600" : "border-blue-500"}`}>
-              <div className="flex justify-between items-start mb-2">
+            <div key={feedback.id} className="bg-gray-800 p-4 rounded-lg shadow border-l-4 border-blue-500">
+              <div className="flex justify-between items-start">
                 <div>
                   <span className="font-medium">{feedback.user}</span>
-                  <span className="text-gray-400 text-sm ml-2">{new Date(feedback.date).toLocaleDateString()}</span>
+                  <p className="text-gray-300">{feedback.message}</p>
                 </div>
-                {!feedback.read && <span className="bg-blue-500 text-xs px-2 py-1 rounded-full text-white">New</span>}
+                {role === "admin" && (
+                  <button onClick={() => handleDelete(feedback.id)} className="bg-red-500 text-white px-2 py-1 rounded">
+                    Delete
+                  </button>
+                )}
               </div>
-              <p className="text-gray-300">{feedback.message}</p>
             </div>
           ))}
         </div>
