@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import db from '../../../database/db'; 
+import db from '../../../database/db';
+import { cookies } from "next/headers"; 
 
 // GET all users
 export async function GET() {
@@ -28,12 +29,28 @@ export async function POST(req: Request) {
 
     try {
         const query = `SELECT * FROM Users WHERE username = '${username}' AND password = '${password}'`;
-        const user = db.prepare(query).get();
+        interface User {
+            username: string;
+            password: string;
+        }
+        const user = db.prepare(query).get() as User;
         console.log(query);
         console.log(user);
 
         if (user) {
             console.log("success", query)
+            const userSession = { username: user.username };
+            
+            // Set a session cookie
+            (await
+                // Set a session cookie
+                cookies()).set("session", JSON.stringify(userSession), {
+                httpOnly: true, // Prevents JavaScript access
+                secure: process.env.NODE_ENV === "production", // Secure in production
+                sameSite: "strict", // Protects against CSRF
+                maxAge: 60 * 60 * 24, // 1 day expiration
+                path: "/",
+            });
             return NextResponse.json({ success: true, message: "Login successful!", user }, {status: 200});
         } else {
             console.log("Invalid user/pass", query)
