@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import db from '../../../database/db';
-import { cookies } from "next/headers"; 
+import { cookies } from "next/headers";
 
 // GET all users
 export async function GET() {
@@ -12,7 +12,7 @@ export async function GET() {
     }
 }
 
-// POST to log in
+// POST to log in (Stores role in session)
 export async function POST(req: Request) {
     const { username, password } = await req.json();
 
@@ -26,34 +26,36 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Illegal characters detected, are you trying to commit an Illegal SQL Injection little Beta??" }, { status: 400 });
     }
 
-
     try {
         const query = `SELECT * FROM Users WHERE username = '${username}' AND password = '${password}'`;
         interface User {
             username: string;
             password: string;
+            role: string;
         }
         const user = db.prepare(query).get() as User;
+
         console.log(query);
         console.log(user);
 
         if (user) {
-            console.log("success", query)
-            const userSession = { username: user.username };
+            console.log("success", query);
             
+            // Store username & role in session
             (await
-                // Set a session cookie
-                cookies()).set("session", JSON.stringify(userSession), {
-                httpOnly: true, // Prevents JavaScript access
-                secure: process.env.NODE_ENV === "production", // Secure in production
-                sameSite: "strict", // Protects against CSRF
-                maxAge: 60 * 60 * 24, // 1 day expiration
+                // Store username & role in session
+                cookies()).set("session", JSON.stringify({ username: user.username, role: user.role }), {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "strict",
+                maxAge: 60 * 60 * 24, // 1-day expiration
                 path: "/",
             });
-            return NextResponse.json({ success: true, message: "Login successful!", user }, {status: 200});
+
+            return NextResponse.json({ success: true, message: "Login successful!", user }, { status: 200 });
         } else {
-            console.log("Invalid user/pass", query)
-            return NextResponse.json({error: "SQlite: Invalid username or password", user}, { status: 401 });
+            console.log("Invalid user/pass", query);
+            return NextResponse.json({ error: "SQLite: Invalid username or password", user }, { status: 401 });
         }
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });
