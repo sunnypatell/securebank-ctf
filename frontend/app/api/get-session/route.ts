@@ -1,17 +1,22 @@
-import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+// @ts-ignore
+import * as cookieSignature from 'cookie-signature';
 
 export async function GET() {
-    const userSession = (await cookies()).get("session");
+  const sessionCookie = (await cookies()).get("session")?.value;
 
-    if (!userSession) {
-        return NextResponse.json({ error: "No session found" }, { status: 401 });
-    }
+  if (!sessionCookie) {
+    return NextResponse.json({ error: "No session" }, { status: 401 });
+  }
 
-    try {
-        const user = JSON.parse(userSession.value);
-        return NextResponse.json({ username: user.username, role: user.role });
-    } catch (error) {
-        return NextResponse.json({ error: "Invalid session data" }, { status: 500 });
-    }
+  const secret = process.env.COOKIE_SECRET!;
+  const unsigned = cookieSignature.unsign(sessionCookie, secret);
+
+  if (!unsigned) {
+    return NextResponse.json({ error: "Invalid session" }, { status: 403 });
+  }
+
+  const session = JSON.parse(unsigned);
+  return NextResponse.json({ username: session.username, role: session.role }, { status: 200 });
 }

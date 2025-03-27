@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import db from '../../../database/db';
 import { cookies } from "next/headers";
 
+// @ts-ignore
+import * as cookieSignature from 'cookie-signature';
+
 // GET all users
 export async function GET() {
     try {
@@ -41,15 +44,30 @@ export async function POST(req: Request) {
         if (user) {
             console.log("success", query);
             
-            (await
-                // Store username & role in session
-                cookies()).set("session", JSON.stringify({ username: user.username, role: user.role }), {
+            // (await
+            //     // Store username & role in session
+            //     cookies()).set("session", JSON.stringify({ username: user.username, role: user.role }), {
+            //     httpOnly: true,
+            //     secure: process.env.NODE_ENV === "production",
+            //     sameSite: "strict",
+            //     maxAge: 60 * 60 * 24, // 1-day expiration
+            //     path: "/",
+            // });
+
+            const sessionData = JSON.stringify({ username: user.username, role: user.role });
+            const secret = process.env.COOKIE_SECRET!;
+            const signedSession = cookieSignature.sign(sessionData, secret);
+
+            //const signedSession = cookieSignature.sign(sessionData, 'p9Y!2m@lK8z$1WqA7&dE4Xu0Cj');
+
+            (await cookies()).set("session", signedSession, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 sameSite: "strict",
-                maxAge: 60 * 60 * 24, // 1-day expiration
+                maxAge: 60 * 60 * 24,
                 path: "/",
             });
+
 
             return NextResponse.json({ success: true, message: "Login successful!", user }, { status: 200 });
         } else {
