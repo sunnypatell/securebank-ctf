@@ -4,7 +4,6 @@ import path from "path";
 const dbPath = path.join(process.cwd(), "database.sqlite");
 const db = new Database(dbPath);
 
-// Ensure the Users table exists
 db.exec(`
   CREATE TABLE IF NOT EXISTS Users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -29,7 +28,7 @@ db.exec(`
   );
 `);
 
-// Insert a hardcoded admin user if none exists
+// Inserts a hardcoded admin user if none exists
 const adminExists = db.prepare("SELECT * FROM Users WHERE username = 'admin'").get();
 
 if (!adminExists) {

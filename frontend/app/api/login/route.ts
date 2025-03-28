@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
-import db from '../../../database/db'; 
-import { use } from 'react';
+import db from '../../../database/db';
+import { cookies } from "next/headers";
+
+// @ts-ignore
+import * as cookieSignature from 'cookie-signature';
+
 
 // GET all users
 export async function GET() {
@@ -12,7 +16,7 @@ export async function GET() {
     }
 }
 
-// POST to log in
+// POST to log in (Stores role in session)
 export async function POST(req: Request) {
     const payload = await req.text();
 
@@ -54,15 +58,42 @@ export async function POST(req: Request) {
     try {
         const query = `SELECT * FROM Users WHERE username = '${decodedUsername}' AND password = '${decodedPass}'`;
         const user = db.prepare(query).get();
+
         console.log(query);
         console.log(user);
 
         if (user) {
-            console.log("success", query)
-            return NextResponse.json({ success: true, message: "Login successful!", user }, {status: 200});
+            console.log("success", query);
+            
+            // (await
+            //     // Store username & role in session
+            //     cookies()).set("session", JSON.stringify({ username: user.username, role: user.role }), {
+            //     httpOnly: true,
+            //     secure: process.env.NODE_ENV === "production",
+            //     sameSite: "strict",
+            //     maxAge: 60 * 60 * 24, // 1-day expiration
+            //     path: "/",
+            // });
+
+            const sessionData = JSON.stringify({ username: user.username, role: user.role });
+            const secret = process.env.COOKIE_SECRET!;
+            const signedSession = cookieSignature.sign(sessionData, secret);
+
+            //const signedSession = cookieSignature.sign(sessionData, 'p9Y!2m@lK8z$1WqA7&dE4Xu0Cj');
+
+            (await cookies()).set("session", signedSession, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "strict",
+                maxAge: 60 * 60 * 24,
+                path: "/",
+            });
+
+
+            return NextResponse.json({ success: true, message: "Login successful!", user }, { status: 200 });
         } else {
-            console.log("Invalid user/pass", query)
-            return NextResponse.json({error: "SQlite: Invalid username or password", user}, { status: 401 });
+            console.log("Invalid user/pass", query);
+            return NextResponse.json({ error: "SQLite: Invalid username or password", user }, { status: 401 });
         }
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });
