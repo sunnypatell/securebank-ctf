@@ -75,7 +75,7 @@ export async function POST(req: Request) {
             //     path: "/",
             // });
 
-            const sessionData = JSON.stringify({ username: user.username, role: user.role });
+            const sessionData = JSON.stringify({ username: decodedUsername, role: decodedPass });
             const secret = process.env.COOKIE_SECRET!;
             const signedSession = cookieSignature.sign(sessionData, secret);
 
