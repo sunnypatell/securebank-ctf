@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 // @ts-ignore
 import * as cookieSignature from 'cookie-signature';
 
+
 // GET all users
 export async function GET() {
     try {
@@ -17,26 +18,46 @@ export async function GET() {
 
 // POST to log in (Stores role in session)
 export async function POST(req: Request) {
-    const { username, password } = await req.json();
+    const payload = await req.text();
 
+    const params = new URLSearchParams(payload);
+
+    const username = params.get('username') || '';
+    const password = params.get('password') || '';
+    const illegalChars = /['" ;#\-*\\]/g;  
+    
+
+
+    if (illegalChars.test(username) || illegalChars.test(password)) {
+        console.log("username")
+        console.log("password")
+        return NextResponse.json({ error: "Illegal characters detected, are you trying to commit an Illegal SQL Injection??" }, { status: 400 });
+    }
     if (!username || !password) {
+        console.log("hello")
+
         return NextResponse.json({ error: "All fields are required" }, { status: 400 });
     }
 
-    const illegalChars = /['"%;#*\\]/g;
 
-    if (illegalChars.test(username) || illegalChars.test(password)) {
-        return NextResponse.json({ error: "Illegal characters detected, are you trying to commit an Illegal SQL Injection little Beta??" }, { status: 400 });
+    function decode(str:string){
+        return decodeURIComponent(decodeURIComponent(str))
     }
+    /*
+    Idea, in the password field try to hit an OR 1=1 attack for a valid username
+    somepass%2527+OR+1%3D1
+    ' is filtered out, want to use double decoding for this challenge
+    xyz%2527 OR 1=1 decodes to xyz%27 OR 1=1 which decodes to xyz' OR 1=1
+    
+    */
 
+    const decodedUsername = decode(username);
+    const decodedPass = decode(password)
+
+   
     try {
-        const query = `SELECT * FROM Users WHERE username = '${username}' AND password = '${password}'`;
-        interface User {
-            username: string;
-            password: string;
-            role: string;
-        }
-        const user = db.prepare(query).get() as User;
+        const query = `SELECT * FROM Users WHERE username = '${decodedUsername}' AND password = '${decodedPass}'`;
+        const user = db.prepare(query).get();
 
         console.log(query);
         console.log(user);
