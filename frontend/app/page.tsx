@@ -1,21 +1,137 @@
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
-      <h1 className="text-4xl font-bold mb-4">SecureBank</h1>
-      <p className="text-xl text-gray-300 mb-8">Your Trusted Financial Partner</p>
+    <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white px-4">
+      <div className="w-full max-w-md mx-auto text-center">
+        {/* Logo/Brand */}
+        <div className="mb-8">
+          <div className="inline-block p-4 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl shadow-lg mb-6">
+            <svg
+              className="w-12 h-12 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
+            </svg>
+          </div>
+          <h1 className="text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
+            SecureBank
+          </h1>
+          <p className="text-xl text-gray-300 mb-2">Your Trusted Financial Partner</p>
+          <div className="w-16 h-1 bg-blue-600 mx-auto rounded-full mb-8"></div>
+        </div>
 
-      <div className="space-y-4 w-full max-w-xs">
-        <a href="/login">
-          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md">
-            Login
-          </button>
-        </a>
+        {/* Card Container */}
+        <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-gray-700 mb-8">
+          <h2 className="text-2xl font-semibold mb-6">Welcome to Secure Banking</h2>
+          <p className="text-gray-300 mb-8">
+            Experience secure, reliable banking services designed to protect your financial future.
+          </p>
 
-        <a href="/register">
-          <button className="w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-md border border-gray-600">
-            Get Started
-          </button>
-        </a>
+          <div className="space-y-4">
+            <a href="/login" className="block">
+              <button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-3 px-6 rounded-xl transition duration-300 shadow-lg shadow-blue-900/30 flex items-center justify-center">
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                  />
+                </svg>
+                Login to Your Account
+              </button>
+            </a>
+
+            <a href="/register" className="block">
+              <button className="w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-6 rounded-xl transition duration-300 border border-gray-600 hover:border-gray-500 shadow-lg shadow-gray-900/20 flex items-center justify-center">
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                  />
+                </svg>
+                Create New Account
+              </button>
+            </a>
+          </div>
+        </div>
+
+        {/* Features */}
+        <div className="grid grid-cols-3 gap-4 text-center">
+          <div className="p-4">
+            <div className="w-10 h-10 mx-auto bg-blue-900/30 rounded-full flex items-center justify-center mb-2">
+              <svg
+                className="w-5 h-5 text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
+              </svg>
+            </div>
+            <h3 className="text-sm font-medium text-gray-300">Secure</h3>
+          </div>
+          <div className="p-4">
+            <div className="w-10 h-10 mx-auto bg-blue-900/30 rounded-full flex items-center justify-center mb-2">
+              <svg
+                className="w-5 h-5 text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            <h3 className="text-sm font-medium text-gray-300">Fast</h3>
+          </div>
+          <div className="p-4">
+            <div className="w-10 h-10 mx-auto bg-blue-900/30 rounded-full flex items-center justify-center mb-2">
+              <svg
+                className="w-5 h-5 text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                />
+              </svg>
+            </div>
+            <h3 className="text-sm font-medium text-gray-300">Reliable</h3>
+          </div>
+        </div>
       </div>
     </main>
   )
