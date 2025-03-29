@@ -2,29 +2,44 @@ import Link from "next/link"
 
 export default function Dashboard() {
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white">
       {/* Navigation */}
-      <nav className="bg-gray-800 border-b border-gray-700">
+      <nav className="bg-gray-800/80 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-10 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <span className="text-xl font-bold">SecureBank</span>
+              <div className="flex-shrink-0 flex items-center">
+                <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-md p-2 mr-2">
+                  <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    />
+                  </svg>
+                </div>
+                <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
+                  SecureBank
+                </span>
               </div>
               <div className="hidden md:block">
                 <div className="ml-10 flex items-baseline space-x-4">
-                  <Link href="/dashboard" className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium">
+                  <Link
+                    href="/dashboard"
+                    className="bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                  >
                     Dashboard
                   </Link>
                   <Link
                     href="/dashboard/transactions"
-                    className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                    className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
                   >
                     Transactions
                   </Link>
                   <Link
                     href="/dashboard/feedback"
-                    className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                    className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
                   >
                     Feedback
                   </Link>
@@ -34,8 +49,22 @@ export default function Dashboard() {
             <div>
               <Link
                 href="/"
-                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                className="text-gray-300 hover:bg-red-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-center"
               >
+                <svg
+                  className="w-4 h-4 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
                 Logout
               </Link>
             </div>
@@ -47,8 +76,10 @@ export default function Dashboard() {
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {/* Welcome Section */}
         <div className="px-4 py-6 sm:px-0">
-          <div className="border-4 border-dashed border-gray-700 rounded-lg p-6 mb-6">
-          <h1 className="text-2xl font-bold mb-4">Welcome, you are now logged in!</h1>
+          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-8 mb-8 shadow-lg">
+            <h1 className="text-2xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
+              Welcome, you are now logged in!
+            </h1>
             <p className="text-gray-300">
               This is your secure banking dashboard. You can manage transactions, view feedback, and more.
             </p>
@@ -58,10 +89,10 @@ export default function Dashboard() {
         {/* Dashboard Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-4 sm:px-0">
           {/* Account Balance */}
-          <div className="bg-gray-800 overflow-hidden shadow rounded-lg">
-            <div className="px-4 py-5 sm:p-6">
+          <div className="bg-gray-800/50 backdrop-blur-sm overflow-hidden shadow-lg rounded-xl border border-gray-700 transition-transform duration-300 hover:transform hover:scale-105">
+            <div className="px-6 py-6">
               <div className="flex items-center">
-                <div className="flex-shrink-0 bg-blue-500 rounded-md p-3">
+                <div className="flex-shrink-0 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg p-3 shadow-lg">
                   <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
@@ -75,26 +106,38 @@ export default function Dashboard() {
                   <dl>
                     <dt className="text-sm font-medium text-gray-400 truncate">Account Balance</dt>
                     <dd>
-                      <div className="text-lg font-medium text-white">$24,500.00</div>
+                      <div className="text-2xl font-bold text-white">$24,500.00</div>
                     </dd>
                   </dl>
                 </div>
               </div>
             </div>
-            <div className="bg-gray-700 px-4 py-4 sm:px-6">
+            <div className="bg-gray-700/70 px-6 py-4">
               <div className="text-sm">
-                <Link href="/dashboard/transactions" className="font-medium text-blue-400 hover:text-blue-300">
+                <Link
+                  href="/dashboard/transactions"
+                  className="font-medium text-blue-400 hover:text-blue-300 flex items-center"
+                >
                   View all transactions
+                  <svg
+                    className="w-4 h-4 ml-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
                 </Link>
               </div>
             </div>
           </div>
 
           {/* Recent Transactions */}
-          <div className="bg-gray-800 overflow-hidden shadow rounded-lg">
-            <div className="px-4 py-5 sm:p-6">
+          <div className="bg-gray-800/50 backdrop-blur-sm overflow-hidden shadow-lg rounded-xl border border-gray-700 transition-transform duration-300 hover:transform hover:scale-105">
+            <div className="px-6 py-6">
               <div className="flex items-center">
-                <div className="flex-shrink-0 bg-green-500 rounded-md p-3">
+                <div className="flex-shrink-0 bg-gradient-to-br from-green-500 to-green-700 rounded-lg p-3 shadow-lg">
                   <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
@@ -108,26 +151,38 @@ export default function Dashboard() {
                   <dl>
                     <dt className="text-sm font-medium text-gray-400 truncate">Recent Transactions</dt>
                     <dd>
-                      <div className="text-lg font-medium text-white">12 this week</div>
+                      <div className="text-2xl font-bold text-white">12 this week</div>
                     </dd>
                   </dl>
                 </div>
               </div>
             </div>
-            <div className="bg-gray-700 px-4 py-4 sm:px-6">
+            <div className="bg-gray-700/70 px-6 py-4">
               <div className="text-sm">
-                <Link href="/dashboard/transactions" className="font-medium text-blue-400 hover:text-blue-300">
+                <Link
+                  href="/dashboard/transactions"
+                  className="font-medium text-blue-400 hover:text-blue-300 flex items-center"
+                >
                   View all transactions
+                  <svg
+                    className="w-4 h-4 ml-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
                 </Link>
               </div>
             </div>
           </div>
 
           {/* Feedback */}
-          <div className="bg-gray-800 overflow-hidden shadow rounded-lg">
-            <div className="px-4 py-5 sm:p-6">
+          <div className="bg-gray-800/50 backdrop-blur-sm overflow-hidden shadow-lg rounded-xl border border-gray-700 transition-transform duration-300 hover:transform hover:scale-105">
+            <div className="px-6 py-6">
               <div className="flex items-center">
-                <div className="flex-shrink-0 bg-purple-500 rounded-md p-3">
+                <div className="flex-shrink-0 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg p-3 shadow-lg">
                   <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
@@ -141,16 +196,28 @@ export default function Dashboard() {
                   <dl>
                     <dt className="text-sm font-medium text-gray-400 truncate">New Feedback</dt>
                     <dd>
-                      <div className="text-lg font-medium text-white">3 unread</div>
+                      <div className="text-2xl font-bold text-white">3 unread</div>
                     </dd>
                   </dl>
                 </div>
               </div>
             </div>
-            <div className="bg-gray-700 px-4 py-4 sm:px-6">
+            <div className="bg-gray-700/70 px-6 py-4">
               <div className="text-sm">
-                <Link href="/dashboard/feedback" className="font-medium text-blue-400 hover:text-blue-300">
+                <Link
+                  href="/dashboard/feedback"
+                  className="font-medium text-blue-400 hover:text-blue-300 flex items-center"
+                >
                   View all feedback
+                  <svg
+                    className="w-4 h-4 ml-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
                 </Link>
               </div>
             </div>
