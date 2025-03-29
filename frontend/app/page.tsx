@@ -1,7 +1,83 @@
+"use client"
+
+import { useEffect, useRef, useState } from "react"
+
 export default function Home() {
+  const [vantaEffect, setVantaEffect] = useState<any>(null)
+  const vantaRef = useRef<HTMLDivElement>(null)
+  const [vantaLoaded, setVantaLoaded] = useState(false)
+
+  useEffect(() => {
+    // Load Vanta.js and Three.js from CDN
+    const loadVantaJS = async () => {
+      // Check if scripts are already loaded
+      if (document.getElementById("three-js-script") && document.getElementById("vanta-globe-script")) {
+        setVantaLoaded(true)
+        return
+      }
+
+      // Load Three.js first
+      const threeScript = document.createElement("script")
+      threeScript.id = "three-js-script"
+      threeScript.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.155.0/three.min.js"
+      threeScript.async = true
+      document.body.appendChild(threeScript)
+
+      // Load Vanta Globe after Three.js
+      threeScript.onload = () => {
+        const vantaScript = document.createElement("script")
+        vantaScript.id = "vanta-globe-script"
+        vantaScript.src = "https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.globe.min.js"
+        vantaScript.async = true
+        vantaScript.onload = () => setVantaLoaded(true)
+        document.body.appendChild(vantaScript)
+      }
+    }
+
+    loadVantaJS()
+  }, [])
+
+  useEffect(() => {
+    if (!vantaLoaded || !vantaRef.current) return
+
+    // Initialize Vanta effect
+    if (!vantaEffect) {
+      // @ts-ignore - Vanta is loaded via CDN
+      const effect = window.VANTA.GLOBE({
+        el: vantaRef.current,
+        mouseControls: true,
+        touchControls: true,
+        gyroControls: false,
+        minHeight: 200.0,
+        minWidth: 200.0,
+        scale: 0.9, // Zoomed out more
+        scaleMobile: 0.9,
+        color: 0x3b82f6, // Blue-500
+        color2: 0x1e40af, // Blue-800
+        size: 1.2, // Slightly smaller size
+        backgroundColor: 0x111827, // Gray-900 (will be overlaid with gradient)
+        opacity: 0.6, // Lower opacity for better text contrast
+      })
+
+      setVantaEffect(effect)
+    }
+
+    // Cleanup
+    return () => {
+      if (vantaEffect) vantaEffect.destroy()
+    }
+  }, [vantaEffect, vantaLoaded])
+
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white px-4">
-      <div className="w-full max-w-md mx-auto text-center">
+    <main className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 z-0"></div>
+
+      {/* Vanta.js container */}
+      <div ref={vantaRef} className="absolute inset-0 z-10 opacity-70"></div>
+
+      {/* Content */}
+      <div className="w-full max-w-md mx-auto text-center relative z-20 px-4">
         {/* Logo/Brand */}
         <div className="mb-8">
           <div className="inline-block p-4 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl shadow-lg mb-6">
@@ -23,12 +99,12 @@ export default function Home() {
           <h1 className="text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
             SecureBank
           </h1>
-          <p className="text-xl text-gray-300 mb-2">Your Trusted Financial Partner</p>
+          <p className="text-xl text-gray-300 mb-2 text-shadow">Your Trusted Financial Partner</p>
           <div className="w-16 h-1 bg-blue-600 mx-auto rounded-full mb-8"></div>
         </div>
 
         {/* Card Container */}
-        <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-gray-700 mb-8">
+        <div className="bg-gray-800/70 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-gray-700 mb-8">
           <h2 className="text-2xl font-semibold mb-6">Welcome to Secure Banking</h2>
           <p className="text-gray-300 mb-8">
             Experience secure, reliable banking services designed to protect your financial future.
@@ -80,7 +156,7 @@ export default function Home() {
         {/* Features */}
         <div className="grid grid-cols-3 gap-4 text-center">
           <div className="p-4">
-            <div className="w-10 h-10 mx-auto bg-blue-900/30 rounded-full flex items-center justify-center mb-2">
+            <div className="w-10 h-10 mx-auto bg-blue-900/50 backdrop-blur-sm rounded-full flex items-center justify-center mb-2">
               <svg
                 className="w-5 h-5 text-blue-400"
                 fill="none"
@@ -99,7 +175,7 @@ export default function Home() {
             <h3 className="text-sm font-medium text-gray-300">Secure</h3>
           </div>
           <div className="p-4">
-            <div className="w-10 h-10 mx-auto bg-blue-900/30 rounded-full flex items-center justify-center mb-2">
+            <div className="w-10 h-10 mx-auto bg-blue-900/50 backdrop-blur-sm rounded-full flex items-center justify-center mb-2">
               <svg
                 className="w-5 h-5 text-blue-400"
                 fill="none"
@@ -113,7 +189,7 @@ export default function Home() {
             <h3 className="text-sm font-medium text-gray-300">Fast</h3>
           </div>
           <div className="p-4">
-            <div className="w-10 h-10 mx-auto bg-blue-900/30 rounded-full flex items-center justify-center mb-2">
+            <div className="w-10 h-10 mx-auto bg-blue-900/50 backdrop-blur-sm rounded-full flex items-center justify-center mb-2">
               <svg
                 className="w-5 h-5 text-blue-400"
                 fill="none"
