@@ -16,6 +16,12 @@ export async function GET() {
     }
 }
 
+type User = {
+    username: string;
+    password: string;
+    role: string;
+  };  
+
 // POST to log in (Stores role in session)
 export async function POST(req: Request) {
     const payload = await req.text();
@@ -57,7 +63,8 @@ export async function POST(req: Request) {
    
     try {
         const query = `SELECT * FROM Users WHERE username = '${decodedUsername}' AND password = '${decodedPass}'`;
-        const user = db.prepare(query).get();
+        const user = db.prepare(query).get() as User;
+        
 
         console.log(query);
         console.log(user);
@@ -75,7 +82,7 @@ export async function POST(req: Request) {
             //     path: "/",
             // });
 
-            const sessionData = JSON.stringify({ username: decodedUsername, role: decodedPass });
+            const sessionData = JSON.stringify({ username: decodedUsername, role: user.role });
             const secret = process.env.COOKIE_SECRET!;
             const signedSession = cookieSignature.sign(sessionData, secret);
 
