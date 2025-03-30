@@ -10,7 +10,7 @@ Please add the names and GitHub usernames of all group members, as of the time o
 | 1  | Daniyal Abbas Lilani      | [DaniyalLilani](https://github.com/daniyallilani/)       |
 | 2  | Sunny Patel        | [sunnypatell](https://github.com/sunnypatell/)       |
 | 3  | Robert Pianezza        | [MagneticZebra](https://github.com/MagneticZebra)       |
-| 4  | Ajay something        | [ajaya-coder](https://github.com/ajaya-coder)       |
+| 4  | Ajay Ariaran        | [ajaya-coder](https://github.com/ajaya-coder)       |
 | 4  | Rija Baig        | [rijabaig](https://github.com/rijabaig)       |
 
 ## How to Sign-Up
