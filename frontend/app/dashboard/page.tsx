@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link"
 
 export default function Dashboard() {
@@ -47,8 +49,11 @@ export default function Dashboard() {
               </div>
             </div>
             <div>
-              <Link
-                href="/"
+              <button
+                onClick={async () => {
+                  await fetch("/api/logout", { method: "POST" });
+                  window.location.href = "/";
+                }}
                 className="text-gray-300 hover:bg-red-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-center"
               >
                 <svg
@@ -66,7 +71,7 @@ export default function Dashboard() {
                   />
                 </svg>
                 Logout
-              </Link>
+              </button>
             </div>
           </div>
         </div>
