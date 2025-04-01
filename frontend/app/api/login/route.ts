@@ -30,30 +30,24 @@ export async function POST(req: Request) {
 
     const username = params.get('username') || '';
     const password = params.get('password') || '';
-    const illegalChars = /['" ;#\-*\\]/g;  
+    const illegalChars = /['";#=\-*\\]/g;  
     
-
-
-    if (illegalChars.test(username) || illegalChars.test(password)) {
+    if (illegalChars.test(username) || illegalChars.test(password)) { // this will catch a single encoded payload because of automatic decoding, must use double encoding to get passed this 
         console.log("username")
         console.log("password")
+        // the trick here is % is not filtered in illegalchars
         return NextResponse.json({ error: "Illegal characters detected, are you trying to commit an Illegal SQL Injection??" }, { status: 400 });
     }
     if (!username || !password) {
-        console.log("hello")
 
         return NextResponse.json({ error: "All fields are required" }, { status: 400 });
     }
 
 
     function decode(str:string){
-        return decodeURIComponent(decodeURIComponent(str))
+        return decodeURIComponent(decodeURIComponent(str)) // enable double decoding
     }
     /*
-    Idea, in the password field try to hit an OR 1=1 attack for a valid username
-    somepass%2527+OR+1%3D1
-    ' is filtered out, want to use double decoding for this challenge
-    xyz%2527 OR 1=1 decodes to xyz%27 OR 1=1 which decodes to xyz' OR 1=1
     
     */
 
@@ -63,11 +57,11 @@ export async function POST(req: Request) {
    
     try {
         const query = `SELECT * FROM Users WHERE username = '${decodedUsername}' AND password = '${decodedPass}'`;
+        console.log("query: " + query)
         const user = db.prepare(query).get() as User;
         
-
-        console.log(query);
-        console.log(user);
+        // log in as first user username=dosentmatter%2527%2520OR%25201%253D1%2520%252F%252A&password=ggIWIN
+        
 
         if (user) {
             console.log("success", query);
