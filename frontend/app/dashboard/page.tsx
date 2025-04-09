@@ -125,7 +125,14 @@ export default function Dashboard() {
   }
 
   // AnimatedCounter component
-  function AnimatedCounter({ endValue, suffix = "", color, label }) {
+  interface AnimatedCounterProps {
+    endValue: number;
+    suffix?: string;
+    color: string;
+    label: string;
+  }
+
+  function AnimatedCounter({ endValue, suffix = "", color, label }: AnimatedCounterProps) {
     const [count, setCount] = useState(0)
     const countRef = useRef(null)
 
