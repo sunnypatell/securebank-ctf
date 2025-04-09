@@ -3,8 +3,41 @@
 import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
 
+interface Transaction {
+  id: number
+  date: string
+  description: string
+  amount: number
+  type: "credit" | "debit"
+}
+
+interface Feedback {
+  id: number
+  user: string
+  message: string
+  date: string
+  read: boolean
+}
+
 export default function Dashboard() {
   const [currentTime, setCurrentTime] = useState(new Date())
+  const [activeTab, setActiveTab] = useState("overview")
+  const [isLoading, setIsLoading] = useState(true)
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>([])
+  const [username, setUsername] = useState("")
+
+  // Fetch all data on component mount
+  useEffect(() => {
+    const fetchAllData = async () => {
+      setIsLoading(true)
+      await Promise.all([fetchUserSession(), fetchTransactions(), fetchFeedbacks()])
+      setIsLoading(false)
+    }
+
+    fetchAllData()
+  }, [])
+
   // Update time every minute
   useEffect(() => {
     const timer = setInterval(() => {
@@ -13,6 +46,83 @@ export default function Dashboard() {
 
     return () => clearInterval(timer)
   }, [])
+
+  // Fetch user session data
+  const fetchUserSession = async () => {
+    try {
+      const response = await fetch("/api/get-session")
+      const data = await response.json()
+      if (data.username) {
+        setUsername(data.username)
+      }
+    } catch (error) {
+      console.error("Error fetching user session:", error)
+    }
+  }
+
+  // Fetch transactions data
+  const fetchTransactions = async () => {
+    try {
+      const response = await fetch("/api/transactions")
+      if (!response.ok) {
+        console.error("Error fetching transactions:", await response.text())
+        return
+      }
+      const data = await response.json()
+      if (Array.isArray(data)) {
+        setTransactions(data)
+      } else {
+        console.error("Unexpected transactions format:", data)
+      }
+    } catch (error) {
+      console.error("Fetch transactions error:", error)
+    }
+  }
+
+  // Fetch feedback data
+  const fetchFeedbacks = async () => {
+    try {
+      const response = await fetch("/api/feedback")
+      if (!response.ok) {
+        console.error("Error fetching feedbacks:", await response.text())
+        return
+      }
+      const data = await response.json()
+      if (Array.isArray(data.feedbacks)) {
+        setFeedbacks(data.feedbacks)
+      } else {
+        console.error("Unexpected feedback format:", data)
+      }
+    } catch (error) {
+      console.error("Fetch feedbacks error:", error)
+    }
+  }
+
+  // Calculate account data from transactions
+  const totalIncome = transactions.filter((t) => t.type === "credit").reduce((sum, t) => sum + t.amount, 0) || 0
+  const totalExpenses = transactions.filter((t) => t.type === "debit").reduce((sum, t) => sum + t.amount, 0) || 0
+  const accountBalance = totalIncome - totalExpenses
+  const availableCredit = 50000 // Default value
+
+  // Calculate credit utilization percentage
+  const creditUtilizationPercentage = availableCredit > 0 ? (accountBalance / availableCredit) * 100 : 0
+
+  // Get recent transactions (last 2)
+  const recentTransactions = transactions.slice(0, 2)
+
+  // Count unread feedback
+  const unreadFeedbackCount = feedbacks.filter((f) => !f.read).length
+
+  // Get latest feedback message
+  const latestFeedback = feedbacks.length > 0 ? feedbacks[0] : null
+
+  // Format currency
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount)
+  }
 
   // AnimatedCounter component
   function AnimatedCounter({ endValue, suffix = "", color, label }) {
@@ -175,7 +285,7 @@ export default function Dashboard() {
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
-                  Welcome to SecureBank
+                  Welcome {username ? `back, ${username}` : "to SecureBank"}
                 </div>
                 <h1 className="text-3xl font-extrabold text-white sm:text-4xl mb-4">
                   Banking Reimagined for the Digital Age
@@ -203,207 +313,222 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Dashboard Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-4 sm:px-0 mb-8">
-          {/* Account Balance */}
-          <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm overflow-hidden shadow-lg rounded-xl border border-gray-700 transition-all duration-300 hover:shadow-blue-900/20 hover:shadow-xl group flex flex-col">
-            <div className="px-6 py-6 flex-grow">
-              <div className="flex items-center">
-                <div className="flex-shrink-0 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg p-3 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <div className="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt className="text-sm font-medium text-gray-400 truncate">Account Balance</dt>
-                    <dd>
-                      <div className="text-2xl font-bold text-white">$24,500.00</div>
-                    </dd>
-                  </dl>
-                </div>
-              </div>
-              <div className="mt-4 pt-4 border-t border-gray-700/50">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-gray-400">Available Credit</span>
-                  <span className="text-xs font-medium text-gray-300">$50,000.00</span>
-                </div>
-                <div className="w-full bg-gray-700 rounded-full h-1.5 mt-1.5">
-                  <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: "49%" }}></div>
-                </div>
-              </div>
-            </div>
-            <div className="bg-gray-800/80 px-6 py-4 mt-auto">
-              <div className="text-sm">
-                <Link
-                  href="/dashboard/transactions"
-                  className="font-medium text-blue-400 hover:text-blue-300 flex items-center"
-                >
-                  View all transactions
-                  <svg
-                    className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </Link>
-              </div>
-            </div>
+        {isLoading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
           </div>
-
-          {/* Recent Transactions */}
-          <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm overflow-hidden shadow-lg rounded-xl border border-gray-700 transition-all duration-300 hover:shadow-green-900/20 hover:shadow-xl group flex flex-col">
-            <div className="px-6 py-6 flex-grow">
-              <div className="flex items-center">
-                <div className="flex-shrink-0 bg-gradient-to-br from-green-500 to-green-700 rounded-lg p-3 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                    />
-                  </svg>
-                </div>
-                <div className="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt className="text-sm font-medium text-gray-400 truncate">Recent Transactions</dt>
-                    <dd>
-                      <div className="text-2xl font-bold text-white">12 this week</div>
-                    </dd>
-                  </dl>
-                </div>
-              </div>
-              <div className="mt-4 space-y-2.5">
-                <div className="flex justify-between items-center text-xs">
+        ) : (
+          <>
+            {/* Dashboard Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-4 sm:px-0 mb-8">
+              {/* Account Balance */}
+              <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm overflow-hidden shadow-lg rounded-xl border border-gray-700 transition-all duration-300 hover:shadow-blue-900/20 hover:shadow-xl group flex flex-col">
+                <div className="px-6 py-6 flex-grow">
                   <div className="flex items-center">
-                    <div className="w-2 h-2 rounded-full bg-green-400 mr-2"></div>
-                    <span className="text-gray-300">Salary Deposit</span>
+                    <div className="flex-shrink-0 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg p-3 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="ml-5 w-0 flex-1">
+                      <dl>
+                        <dt className="text-sm font-medium text-gray-400 truncate">Account Balance</dt>
+                        <dd>
+                          <div className="text-2xl font-bold text-white">{formatCurrency(accountBalance)}</div>
+                        </dd>
+                      </dl>
+                    </div>
                   </div>
-                  <span className="text-green-400 font-medium">+$3,000.00</span>
+                  <div className="mt-4 pt-4 border-t border-gray-700/50">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-gray-400">Available Credit</span>
+                      <span className="text-xs font-medium text-gray-300">{formatCurrency(availableCredit)}</span>
+                    </div>
+                    <div className="w-full bg-gray-700 rounded-full h-1.5 mt-1.5">
+                      <div
+                        className="bg-blue-500 h-1.5 rounded-full"
+                        style={{ width: `${Math.min(creditUtilizationPercentage, 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center text-xs">
+                <div className="bg-gray-800/80 px-6 py-4 mt-auto">
+                  <div className="text-sm">
+                    <Link
+                      href="/dashboard/transactions"
+                      className="font-medium text-blue-400 hover:text-blue-300 flex items-center"
+                    >
+                      View all transactions
+                      <svg
+                        className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M14 5l7 7m0 0l-7 7m7-7H3"
+                        />
+                      </svg>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* Recent Transactions */}
+              <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm overflow-hidden shadow-lg rounded-xl border border-gray-700 transition-all duration-300 hover:shadow-green-900/20 hover:shadow-xl group flex flex-col">
+                <div className="px-6 py-6 flex-grow">
                   <div className="flex items-center">
-                    <div className="w-2 h-2 rounded-full bg-red-400 mr-2"></div>
-                    <span className="text-gray-300">Rent Payment</span>
+                    <div className="flex-shrink-0 bg-gradient-to-br from-green-500 to-green-700 rounded-lg p-3 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                        />
+                      </svg>
+                    </div>
+                    <div className="ml-5 w-0 flex-1">
+                      <dl>
+                        <dt className="text-sm font-medium text-gray-400 truncate">Recent Transactions</dt>
+                        <dd>
+                          <div className="text-2xl font-bold text-white">{transactions.length} total</div>
+                        </dd>
+                      </dl>
+                    </div>
                   </div>
-                  <span className="text-red-400 font-medium">-$1,200.00</span>
+                  <div className="mt-4 space-y-2.5">
+                    {recentTransactions.length > 0 ? (
+                      recentTransactions.map((transaction) => (
+                        <div key={transaction.id} className="flex justify-between items-center text-xs">
+                          <div className="flex items-center">
+                            <div
+                              className={`w-2 h-2 rounded-full ${transaction.type === "credit" ? "bg-green-400" : "bg-red-400"} mr-2`}
+                            ></div>
+                            <span className="text-gray-300">{transaction.description}</span>
+                          </div>
+                          <span
+                            className={
+                              transaction.type === "credit" ? "text-green-400 font-medium" : "text-red-400 font-medium"
+                            }
+                          >
+                            {transaction.type === "credit" ? "+" : "-"}
+                            {formatCurrency(transaction.amount)}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center text-gray-400 py-2">No recent transactions</div>
+                    )}
+                  </div>
+                </div>
+                <div className="bg-gray-800/80 px-6 py-4 mt-auto">
+                  <div className="text-sm">
+                    <Link
+                      href="/dashboard/transactions"
+                      className="font-medium text-green-400 hover:text-green-300 flex items-center"
+                    >
+                      View all transactions
+                      <svg
+                        className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M14 5l7 7m0 0l-7 7m7-7H3"
+                        />
+                      </svg>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feedback */}
+              <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm overflow-hidden shadow-lg rounded-xl border border-gray-700 transition-all duration-300 hover:shadow-purple-900/20 hover:shadow-xl group flex flex-col">
+                <div className="px-6 py-6 flex-grow">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg p-3 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="ml-5 w-0 flex-1">
+                      <dl>
+                        <dt className="text-sm font-medium text-gray-400 truncate">New Feedback</dt>
+                        <dd>
+                          <div className="text-2xl font-bold text-white">{unreadFeedbackCount} unread</div>
+                        </dd>
+                      </dl>
+                    </div>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-gray-700/50">
+                    <div className="text-xs text-gray-400 mb-2">Latest feedback:</div>
+                    {latestFeedback ? (
+                      <p className="text-sm text-gray-300 italic">
+                        "
+                        {latestFeedback.message.length > 70
+                          ? latestFeedback.message.substring(0, 70) + "..."
+                          : latestFeedback.message}
+                        "
+                      </p>
+                    ) : (
+                      <p className="text-sm text-gray-500 italic">No feedback available yet</p>
+                    )}
+                  </div>
+                </div>
+                <div className="bg-gray-800/80 px-6 py-4 mt-auto">
+                  <div className="text-sm">
+                    <Link
+                      href="/dashboard/feedback"
+                      className="font-medium text-purple-400 hover:text-purple-300 flex items-center"
+                    >
+                      View all feedback
+                      <svg
+                        className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M14 5l7 7m0 0l-7 7m7-7H3"
+                        />
+                      </svg>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="bg-gray-800/80 px-6 py-4 mt-auto">
-              <div className="text-sm">
-                <Link
-                  href="/dashboard/transactions"
-                  className="font-medium text-green-400 hover:text-green-300 flex items-center"
-                >
-                  View all transactions
-                  <svg
-                    className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </Link>
-              </div>
-            </div>
-          </div>
 
-          {/* Feedback */}
-          <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm overflow-hidden shadow-lg rounded-xl border border-gray-700 transition-all duration-300 hover:shadow-purple-900/20 hover:shadow-xl group flex flex-col">
-            <div className="px-6 py-6 flex-grow">
-              <div className="flex items-center">
-                <div className="flex-shrink-0 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg p-3 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-                    />
-                  </svg>
-                </div>
-                <div className="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt className="text-sm font-medium text-gray-400 truncate">New Feedback</dt>
-                    <dd>
-                      <div className="text-2xl font-bold text-white">3 unread</div>
-                    </dd>
-                  </dl>
-                </div>
-              </div>
-              <div className="mt-4 pt-4 border-t border-gray-700/50">
-                <div className="text-xs text-gray-400 mb-2">Latest feedback:</div>
-                <p className="text-sm text-gray-300 italic">
-                  "The new mobile app is fantastic! Much easier to use than the previous version."
-                </p>
-              </div>
-            </div>
-            <div className="bg-gray-800/80 px-6 py-4 mt-auto">
-              <div className="text-sm">
-                <Link
-                  href="/dashboard/feedback"
-                  className="font-medium text-purple-400 hover:text-purple-300 flex items-center"
-                >
-                  View all feedback
-                  <svg
-                    className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Security Status */}
-        <div className="px-4 sm:px-0 mb-8">
-          <div className="bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-sm border border-gray-700 rounded-xl p-6 shadow-lg">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold flex items-center text-white">
-                <svg
-                  className="w-5 h-5 mr-2 text-green-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                  />
-                </svg>
-                Security Status
-              </h2>
-              <span className="px-3 py-1 bg-green-900/30 text-green-400 rounded-full text-xs font-medium">
-                Protected
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-gray-800/70 rounded-lg p-4 border border-gray-700 hover:border-green-500/30 transition-colors duration-300">
-                <div className="flex items-center mb-3">
-                  <div className="p-2 bg-green-900/30 rounded-md mr-3">
+            {/* Security Status */}
+            <div className="px-4 sm:px-0 mb-8">
+              <div className="bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-sm border border-gray-700 rounded-xl p-6 shadow-lg">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold flex items-center text-white">
                     <svg
-                      className="w-5 h-5 text-green-400"
+                      className="w-5 h-5 mr-2 text-green-400"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -416,87 +541,98 @@ export default function Dashboard() {
                         d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
                       />
                     </svg>
-                  </div>
-                  <h3 className="text-md font-medium text-white">2FA Enabled</h3>
+                    Security Status
+                  </h2>
+                  <span className="px-3 py-1 bg-green-900/30 text-green-400 rounded-full text-xs font-medium">
+                    Protected
+                  </span>
                 </div>
-                <p className="text-sm text-gray-400">Your account is protected with two-factor authentication.</p>
-              </div>
 
-              <div className="bg-gray-800/70 rounded-lg p-4 border border-gray-700 hover:border-yellow-500/30 transition-colors duration-300">
-                <div className="flex items-center mb-3">
-                  <div className="p-2 bg-yellow-900/30 rounded-md mr-3">
-                    <svg
-                      className="w-5 h-5 text-yellow-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                      />
-                    </svg>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-gray-800/70 rounded-lg p-4 border border-gray-700 hover:border-green-500/30 transition-colors duration-300">
+                    <div className="flex items-center mb-3">
+                      <div className="p-2 bg-green-900/30 rounded-md mr-3">
+                        <svg
+                          className="w-5 h-5 text-green-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                          />
+                        </svg>
+                      </div>
+                      <h3 className="text-md font-medium text-white">2FA Enabled</h3>
+                    </div>
+                    <p className="text-sm text-gray-400">Your account is protected with two-factor authentication.</p>
                   </div>
-                  <h3 className="text-md font-medium text-white">Password Strength</h3>
-                </div>
-                <p className="text-sm text-gray-400">Your password was last updated 30 days ago.</p>
-              </div>
 
-              <div className="bg-gray-800/70 rounded-lg p-4 border border-gray-700 hover:border-blue-500/30 transition-colors duration-300">
-                <div className="flex items-center mb-3">
-                  <div className="p-2 bg-blue-900/30 rounded-md mr-3">
-                    <svg
-                      className="w-5 h-5 text-blue-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                      />
-                    </svg>
+                  <div className="bg-gray-800/70 rounded-lg p-4 border border-gray-700 hover:border-yellow-500/30 transition-colors duration-300">
+                    <div className="flex items-center mb-3">
+                      <div className="p-2 bg-yellow-900/30 rounded-md mr-3">
+                        <svg
+                          className="w-5 h-5 text-yellow-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                          />
+                        </svg>
+                      </div>
+                      <h3 className="text-md font-medium text-white">Password Strength</h3>
+                    </div>
+                    <p className="text-sm text-gray-400">Your password was last updated 30 days ago.</p>
                   </div>
-                  <h3 className="text-md font-medium text-white">Activity Logs</h3>
+
+                  <div className="bg-gray-800/70 rounded-lg p-4 border border-gray-700 hover:border-blue-500/30 transition-colors duration-300">
+                    <div className="flex items-center mb-3">
+                      <div className="p-2 bg-blue-900/30 rounded-md mr-3">
+                        <svg
+                          className="w-5 h-5 text-blue-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                          />
+                        </svg>
+                      </div>
+                      <h3 className="text-md font-medium text-white">Activity Logs</h3>
+                    </div>
+                    <p className="text-sm text-gray-400">
+                      Last login: Today at{" "}
+                      {`${currentTime.getHours() % 12 || 12}:${String(currentTime.getMinutes()).padStart(2, "0")} ${
+                        currentTime.getHours() >= 12 ? "PM" : "AM"
+                      }`}{" "}
+                      from your usual device.
+                    </p>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-400">Last login: Today at 9:45 AM from your usual device.</p>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* About SecureBank Section */}
-        <div className="px-4 py-6 sm:px-0">
-          <div className="bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-sm border border-gray-700 rounded-xl p-8 shadow-lg">
-            <h2 className="text-xl font-bold mb-6 flex items-center text-white">
-              <svg
-                className="w-5 h-5 mr-2 text-blue-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              About SecureBank
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gray-800/70 p-5 rounded-lg border border-gray-700 hover:border-blue-500/30 transition-colors duration-300 hover:shadow-lg">
-                <h3 className="text-md font-medium mb-3 text-white flex items-center">
+            {/* About SecureBank Section */}
+            <div className="px-4 py-6 sm:px-0">
+              <div className="bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-sm border border-gray-700 rounded-xl p-8 shadow-lg">
+                <h2 className="text-xl font-bold mb-6 flex items-center text-white">
                   <svg
-                    className="w-4 h-4 mr-2 text-blue-400"
+                    className="w-5 h-5 mr-2 text-blue-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -506,121 +642,145 @@ export default function Dashboard() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  Our Mission
-                </h3>
-                <p className="text-gray-300 text-sm leading-relaxed">
-                  At SecureBank, our mission is to provide the most secure and reliable banking experience for our
-                  customers. We combine cutting-edge technology with exceptional customer service to protect your
-                  financial assets and help you achieve your financial goals.
-                </p>
-                <div className="mt-4 pt-4 border-t border-gray-600">
-                  <p className="text-gray-400 text-sm italic">
-                    "Security isn't just a feature - it's the foundation of everything we do."
-                  </p>
+                  About SecureBank
+                </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-gray-800/70 p-5 rounded-lg border border-gray-700 hover:border-blue-500/30 transition-colors duration-300 hover:shadow-lg">
+                    <h3 className="text-md font-medium mb-3 text-white flex items-center">
+                      <svg
+                        className="w-4 h-4 mr-2 text-blue-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                        />
+                      </svg>
+                      Our Mission
+                    </h3>
+                    <p className="text-gray-300 text-sm leading-relaxed">
+                      At SecureBank, our mission is to provide the most secure and reliable banking experience for our
+                      customers. We combine cutting-edge technology with exceptional customer service to protect your
+                      financial assets and help you achieve your financial goals.
+                    </p>
+                    <div className="mt-4 pt-4 border-t border-gray-600">
+                      <p className="text-gray-400 text-sm italic">
+                        "Security isn't just a feature - it's the foundation of everything we do."
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-800/70 p-5 rounded-lg border border-gray-700 hover:border-green-500/30 transition-colors duration-300 hover:shadow-lg">
+                    <h3 className="text-md font-medium mb-3 text-white flex items-center">
+                      <svg
+                        className="w-4 h-4 mr-2 text-green-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                        />
+                      </svg>
+                      Security Features
+                    </h3>
+                    <ul className="space-y-2 text-sm">
+                      <li className="flex items-start">
+                        <svg
+                          className="w-4 h-4 text-green-400 mt-0.5 mr-2 flex-shrink-0"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span className="text-gray-300">
+                          End-to-end encryption for all transactions and communications
+                        </span>
+                      </li>
+                      <li className="flex items-start">
+                        <svg
+                          className="w-4 h-4 text-green-400 mt-0.5 mr-2 flex-shrink-0"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span className="text-gray-300">Multi-factor authentication and biometric verification</span>
+                      </li>
+                      <li className="flex items-start">
+                        <svg
+                          className="w-4 h-4 text-green-400 mt-0.5 mr-2 flex-shrink-0"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span className="text-gray-300">Real-time fraud detection and prevention systems</span>
+                      </li>
+                      <li className="flex items-start">
+                        <svg
+                          className="w-4 h-4 text-green-400 mt-0.5 mr-2 flex-shrink-0"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span className="text-gray-300">24/7 security monitoring and instant alerts</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="mt-6 bg-gray-800/70 p-5 rounded-lg border border-gray-700 hover:border-purple-500/30 transition-colors duration-300 hover:shadow-lg">
+                  <h3 className="text-md font-medium mb-4 text-white flex items-center">
+                    <svg
+                      className="w-4 h-4 mr-2 text-purple-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                      />
+                    </svg>
+                    Our Global Presence
+                  </h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                    <AnimatedCounter endValue={25} suffix="+" color="text-blue-400" label="Countries" />
+                    <AnimatedCounter endValue={150} suffix="+" color="text-green-400" label="Branches" />
+                    <AnimatedCounter endValue={2} suffix="M+" color="text-purple-400" label="Customers" />
+                    <AnimatedCounter endValue={24} suffix="/7" color="text-yellow-400" label="Support" />
+                  </div>
                 </div>
               </div>
-
-              <div className="bg-gray-800/70 p-5 rounded-lg border border-gray-700 hover:border-green-500/30 transition-colors duration-300 hover:shadow-lg">
-                <h3 className="text-md font-medium mb-3 text-white flex items-center">
-                  <svg
-                    className="w-4 h-4 mr-2 text-green-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                    />
-                  </svg>
-                  Security Features
-                </h3>
-                <ul className="space-y-2 text-sm">
-                  <li className="flex items-start">
-                    <svg
-                      className="w-4 h-4 text-green-400 mt-0.5 mr-2 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-gray-300">End-to-end encryption for all transactions and communications</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg
-                      className="w-4 h-4 text-green-400 mt-0.5 mr-2 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-gray-300">Multi-factor authentication and biometric verification</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg
-                      className="w-4 h-4 text-green-400 mt-0.5 mr-2 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-gray-300">Real-time fraud detection and prevention systems</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg
-                      className="w-4 h-4 text-green-400 mt-0.5 mr-2 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-gray-300">24/7 security monitoring and instant alerts</span>
-                  </li>
-                </ul>
-              </div>
             </div>
-
-            <div className="mt-6 bg-gray-800/70 p-5 rounded-lg border border-gray-700 hover:border-purple-500/30 transition-colors duration-300 hover:shadow-lg">
-              <h3 className="text-md font-medium mb-4 text-white flex items-center">
-                <svg
-                  className="w-4 h-4 mr-2 text-purple-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-                  />
-                </svg>
-                Our Global Presence
-              </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-                <AnimatedCounter endValue={25} suffix="+" color="text-blue-400" label="Countries" />
-                <AnimatedCounter endValue={150} suffix="+" color="text-green-400" label="Branches" />
-                <AnimatedCounter endValue={2} suffix="M+" color="text-purple-400" label="Customers" />
-                <AnimatedCounter endValue={24} suffix="/7" color="text-yellow-400" label="Support" />
-              </div>
-            </div>
-          </div>
-        </div>
+          </>
+        )}
       </main>
 
       <footer className="bg-gray-800/60 backdrop-blur-sm border-t border-gray-700 mt-auto">
