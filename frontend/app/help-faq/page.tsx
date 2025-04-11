@@ -269,7 +269,7 @@ export default function HelpFAQ() {
                   </svg>
                   Help Center
                 </div>
-                <h1 className="text-3xl font-extrabold text-white sm:text-4xl mb-4">How can we help you today?</h1>
+                <h1 className="text-3xl font-extrabold text-white sm:text-4xl mb-4">How can we help you today? 🤔</h1>
                 <p className="text-lg text-blue-100 mb-6 max-w-xl">
                   Find answers to common questions about your SecureBank account, transactions, and more.
                 </p>

@@ -301,7 +301,7 @@ export default function Dashboard() {
                   Welcome {username ? `back, ${username}` : "to SecureBank"}
                 </div>
                 <h1 className="text-3xl font-extrabold text-white sm:text-4xl mb-4">
-                  Banking Reimagined for the Digital Age
+                  Banking Reimagined for the Digital Age🔐
                 </h1>
                 <p className="text-lg text-blue-100 mb-6 max-w-xl">
                   Experience the future of secure banking with our cutting-edge platform designed to protect your
