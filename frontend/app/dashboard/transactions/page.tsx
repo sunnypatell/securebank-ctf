@@ -12,6 +12,7 @@ export default function Transactions() {
     description: string
     amount: number
     type: "credit" | "debit"
+     username: string 
   }
 
   const [search, setSearch] = useState("")
@@ -404,6 +405,14 @@ export default function Transactions() {
           </div>
         )}
       </main>
+            {/* Floating Add Transaction Button */}
+            <Link href="/dashboard/transactions/new">
+        <div className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg cursor-pointer transition duration-200 z-50">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+        </div>
+      </Link>
     </div>
   )
 }
