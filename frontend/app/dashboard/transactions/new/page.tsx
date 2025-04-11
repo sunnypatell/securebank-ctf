@@ -106,6 +106,12 @@ export default function AddTransactionPage() {
                   >
                     Feedback
                   </Link>
+                  <Link
+                    href="/help-faq"
+                    className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                  >
+                    Help & FAQ
+                  </Link>
                 </div>
               </div>
             </div>
@@ -177,6 +183,7 @@ export default function AddTransactionPage() {
               <p className="text-sm font-medium">{message.text}</p>
             </div>
             <button
+              aria-label="Close notification"
               className="ml-auto flex-shrink-0 -mt-1 -mr-1 p-1 rounded-full hover:bg-gray-800 focus:outline-none"
               onClick={() => setMessage(null)}
             >
