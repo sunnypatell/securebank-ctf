@@ -12,7 +12,8 @@ export default function Transactions() {
     description: string
     amount: number
     type: "credit" | "debit"
-     username: string 
+    username: string
+    userId: string
   }
 
   const [search, setSearch] = useState("")
@@ -94,12 +95,6 @@ export default function Transactions() {
                     className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
                   >
                     Feedback
-                  </Link>
-                  <Link
-                    href="/help-faq"
-                    className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
-                  >
-                    Help & FAQ
                   </Link>
                 </div>
               </div>
@@ -311,6 +306,9 @@ export default function Transactions() {
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Description
                     </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      User ID
+                    </th>
                     <th className="px-6 py-4 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Amount
                     </th>
@@ -324,6 +322,7 @@ export default function Transactions() {
                     <tr key={txn.id} className="hover:bg-gray-700/30 transition-colors duration-150">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{txn.date}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{txn.description}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{txn.userId}</td>
                       <td
                         className={`px-6 py-4 whitespace-nowrap text-sm text-right font-medium ${txn.type === "credit" ? "text-green-400" : "text-red-400"}`}
                       >

@@ -17,6 +17,7 @@ export async function GET() {
 }
 
 type User = {
+    id: number;
     username: string;
     password: string;
     role: string;
@@ -89,7 +90,14 @@ export async function POST(req: Request) {
                 maxAge: 60 * 60 * 24,
                 path: "/",
             });
-
+            // Set userId cookie for DB filtering
+            (await cookies()).set("userId", String(user.id), {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "strict",
+                maxAge: 60 * 60 * 24,
+                path: "/",
+            });
 
             return NextResponse.json({ success: true, message: "Login successful!", user }, { status: 200 });
         } else {

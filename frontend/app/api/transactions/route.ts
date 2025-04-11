@@ -3,6 +3,7 @@ import sqlite3 from "sqlite3"
 import { open } from "sqlite"
 import path from "path"
 import { NextRequest } from "next/server"
+import { cookies } from "next/headers"
 
 // Connect to SQLite database
 async function openDb() {
@@ -12,8 +13,7 @@ async function openDb() {
   })
 }
 
-// logged-in user ID 1
-const currentUserId = 1
+
 
 // GET handler (already works for filtering and payload bypass)
 export async function GET(req: NextRequest) {
@@ -21,6 +21,8 @@ export async function GET(req: NextRequest) {
     const db = await openDb()
     const searchParams = new URL(req.url).searchParams
     const search = searchParams.get("search") || ""
+    const cookieStore = req.cookies 
+    const userId = parseInt(cookieStore.get("userId")?.value || "1")
 
     let query: string
 
@@ -29,25 +31,25 @@ export async function GET(req: NextRequest) {
 
     if (isExactBypass) {
       query = `
-        SELECT transactions.*, users.username
+        SELECT transactions.*, users.username, transactions.user_id AS userId
         FROM transactions
         JOIN users ON transactions.user_id = users.id
         WHERE transactions.description LIKE '%${search}%'
       `;
     } else if (search.trim()) {
       query = `
-        SELECT transactions.*, users.username
+        SELECT transactions.*, users.username, transactions.user_id AS userId
         FROM transactions
         JOIN users ON transactions.user_id = users.id
-        WHERE transactions.user_id = ${currentUserId}
+        WHERE transactions.user_id = ${userId}
         AND transactions.description LIKE '%${search}%'
       `;
     } else {
       query = `
-        SELECT transactions.*, users.username
+        SELECT transactions.*, users.username, transactions.user_id AS userId
         FROM transactions
         JOIN users ON transactions.user_id = users.id
-        WHERE transactions.user_id = ${currentUserId}
+        WHERE transactions.user_id = ${userId}
       `;
     }
 
@@ -67,6 +69,11 @@ export async function POST(req: Request) {
     const db = await openDb()
     const body = await req.json()
 
+  
+    const cookieStore = await cookies()
+    const userId = parseInt(cookieStore.get("userId")?.value || "1")
+
+
     const { date, description, amount, type } = body
 
     // Validate inputs
@@ -77,7 +84,7 @@ export async function POST(req: Request) {
     await db.run(
       `INSERT INTO transactions (user_id, date, description, amount, type)
        VALUES (?, ?, ?, ?, ?)`,
-      [currentUserId, date, description, parseFloat(amount), type]
+       [userId, date, description, parseFloat(amount), type]
     )
 
     return NextResponse.json({ success: true })
