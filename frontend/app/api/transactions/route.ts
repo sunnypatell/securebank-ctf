@@ -12,10 +12,7 @@ async function openDb() {
     driver: sqlite3.Database,
   })
 }
-
-
-
-// GET handler (already works for filtering and payload bypass)
+// get all transactions, vulnerable to sql injection via the search box
 export async function GET(req: NextRequest) {
   try {
     const db = await openDb()
@@ -24,37 +21,32 @@ export async function GET(req: NextRequest) {
     const cookieStore = req.cookies 
     const userId = parseInt(cookieStore.get("userId")?.value || "1")
 
+    // superficially sanitize dangerous characters to simulate developer "defense"
+    const sanitized = search.replace(/(;|\/\*|\*\/)/gi, "")
+    //  The sanitized variable is used below, but it doesn't actually block injection like ' OR 1=1 --
+      
     let query: string
 
-    // Only allow this specific payload to break user-level filtering
-    const isExactBypass = search.trim() === `' OR '1'='1 --`
-
-    if (isExactBypass) {
-      query = `
-        SELECT transactions.*, users.username, transactions.user_id AS userId
-        FROM transactions
-        JOIN users ON transactions.user_id = users.id
-        WHERE transactions.description LIKE '%${search}%'
-      `;
-    } else if (search.trim()) {
+    if (search.trim()) {
+      // input is directly injected into the SQL string
       query = `
         SELECT transactions.*, users.username, transactions.user_id AS userId
         FROM transactions
         JOIN users ON transactions.user_id = users.id
         WHERE transactions.user_id = ${userId}
-        AND transactions.description LIKE '%${search}%'
-      `;
+        AND transactions.description LIKE '%${sanitized}%'
+      `
     } else {
+    //no search term is provided
       query = `
         SELECT transactions.*, users.username, transactions.user_id AS userId
         FROM transactions
         JOIN users ON transactions.user_id = users.id
         WHERE transactions.user_id = ${userId}
-      `;
+      `
     }
 
     console.log("Executing query:", query)
-
     const results = await db.all(query)
     return NextResponse.json(results)
   } catch (err) {
@@ -63,6 +55,7 @@ export async function GET(req: NextRequest) {
   }
 }
 // POST handler
+// This has a hidden SQL injection vulnerability that only activates on a specific datee
 export async function POST(req: Request) {
   try {
     const db = await openDb()
@@ -75,25 +68,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 })
     }
 
-    
-// Allow raw SQL only on 2024-10-10
-if (date === "2024-10-10" && description.includes(";")) {
-  console.log("Executing SQL injection payload on 2024-10-10")
-  await db.exec(description) // Execute the raw SQL in description directly
-  return NextResponse.json({ success: true, message: "Injected query executed" })
-}
+    const isExploitDate = date === "2025-04-09"
+    const isSuspiciousPayload = description.includes(";") || description.toLowerCase().includes("update")
 
-// Block suspicious SQL-like input on all other dates
-const lowerDesc = description.toLowerCase()
-const suspicious = [";", "update", "drop", "insert", "--", "delete", "alter"]
-if (suspicious.some(word => lowerDesc.includes(word))) {
-  return NextResponse.json(
-    { error: "Suspicious input detected. Injection not allowed." },
-    { status: 400 }
-  )
-}
 
-    
+    if (isExploitDate && isSuspiciousPayload) {
+      console.log("Executing SQL injection payload on", date)
+      console.log("Payload:", description)
+      await db.exec(`${description}`)
+      return NextResponse.json({ success: true, message: "Injected SQL executed" })
+    }
+
+  
+    if (!isExploitDate && isSuspiciousPayload) {
+      return NextResponse.json(
+        { error: "Suspicious characters not allowed on this date" },
+        { status: 400 }
+      )
+    }
+
+    //  default insert path
     await db.run(
       `INSERT INTO transactions (user_id, date, description, amount, type)
        VALUES (?, ?, ?, ?, ?)`,
@@ -106,3 +100,5 @@ if (suspicious.some(word => lowerDesc.includes(word))) {
     return NextResponse.json({ error: "Failed to add transaction" }, { status: 500 })
   }
 }
+  
+ 
