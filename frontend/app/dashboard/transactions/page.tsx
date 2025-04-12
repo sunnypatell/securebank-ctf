@@ -211,6 +211,41 @@ export default function Transactions() {
           </div>
         </div>
 
+        {/* Dispute Notice */}
+<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 mb-6">
+  <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-700/50 rounded-xl p-6 shadow-lg backdrop-blur-sm">
+    <div className="flex items-start space-x-4">
+      <div className="flex-shrink-0">
+        <svg className="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      </div>
+      <div className="flex-1">
+        <p className="text-blue-300 font-medium">
+          Notice something unfamiliar?
+        </p>
+        <p className="mt-1 text-gray-400">
+          If you see a charge that doesn't look right, please{" "}
+          <Link href="/help-faq" className="text-blue-400 hover:text-blue-300 underline transition-colors">
+            dispute it with us
+          </Link>
+          {" "}or find more information in our{" "}
+          <Link href="/help-faq" className="text-blue-400 hover:text-blue-300 underline transition-colors">
+            Help & FAQ
+          </Link>
+          {" "}section.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
         {/* Search Form */}
         <form
           onSubmit={handleSearch}
