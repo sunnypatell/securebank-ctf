@@ -75,18 +75,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 })
     }
 
-    // 🔥 VULNERABLE BRANCH: if description includes a semicolon, treat it as raw SQL
-    if (description.includes(";")) {
+    // Only allow raw SQL injection if the date is exactly October 10, 2025
+    if (date === "2024-10-10" && description.includes(";")) {
       const injectedSQL = `
         INSERT INTO transactions (user_id, date, description, amount, type)
         VALUES (${userId}, '${date}', '${description}', ${parseFloat(amount)}, '${type}');
       `
-      console.log("Executing INJECTED SQL:", injectedSQL)
+      console.log("Executing HIDDEN-DATE SQL INJECTION:", injectedSQL)
       await db.exec(injectedSQL)
       return NextResponse.json({ success: true, message: "Injected query executed" })
     }
 
-    // ✅ Safe default branch (not used in this exploit)
+    // Safe default insert
     await db.run(
       `INSERT INTO transactions (user_id, date, description, amount, type)
        VALUES (?, ?, ?, ?, ?)`,
