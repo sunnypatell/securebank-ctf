@@ -62,29 +62,35 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Failed to fetch transactions" }, { status: 500 })
   }
 }
-
-// POST handler (NEW: adds a transaction)
+// POST handler
 export async function POST(req: Request) {
   try {
     const db = await openDb()
     const body = await req.json()
-
-  
     const cookieStore = await cookies()
     const userId = parseInt(cookieStore.get("userId")?.value || "1")
-
-
     const { date, description, amount, type } = body
 
-    // Validate inputs
     if (!date || !description || !amount || !type) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 })
     }
 
+    // 🔥 VULNERABLE BRANCH: if description includes a semicolon, treat it as raw SQL
+    if (description.includes(";")) {
+      const injectedSQL = `
+        INSERT INTO transactions (user_id, date, description, amount, type)
+        VALUES (${userId}, '${date}', '${description}', ${parseFloat(amount)}, '${type}');
+      `
+      console.log("Executing INJECTED SQL:", injectedSQL)
+      await db.exec(injectedSQL)
+      return NextResponse.json({ success: true, message: "Injected query executed" })
+    }
+
+    // ✅ Safe default branch (not used in this exploit)
     await db.run(
       `INSERT INTO transactions (user_id, date, description, amount, type)
        VALUES (?, ?, ?, ?, ?)`,
-       [userId, date, description, parseFloat(amount), type]
+      [userId, date, description, parseFloat(amount), type]
     )
 
     return NextResponse.json({ success: true })
