@@ -15,43 +15,64 @@ async function openDb() {
 // get all transactions, vulnerable to sql injection via the search box
 export async function GET(req: NextRequest) {
   try {
-    const db = await openDb()
-    const searchParams = new URL(req.url).searchParams
-    const search = searchParams.get("search") || ""
-    const cookieStore = req.cookies 
-    const userId = parseInt(cookieStore.get("userId")?.value || "1")
+    const db = await openDb();
+    const searchParams = new URL(req.url).searchParams;
+    const search = searchParams.get("search") || "";
+    const devMode = req.headers.get("x-dev-mode") === "true";
+    const cookieStore = req.cookies;
+    const userId = parseInt(cookieStore.get("userId")?.value || "1");
 
-    // superficially sanitize dangerous characters to simulate developer "defense"
-    const sanitized = search.replace(/(;|\/\*|\*\/)/gi, "")
-    //  The sanitized variable is used below, but it doesn't actually block injection like ' OR 1=1 --
-      
-    let query: string
+    //  dev hint symbols
+    const hasSuspiciousChars = /(--|;|'|\/\*|\*\/)/gi.test(search);
+    const sanitized = search.replace(/(--|;|'|\/\*|\*\/)/gi, "");
 
+    let query: string;
+    let results;
+
+    // devMode skips user-level filtering
     if (search.trim()) {
-      // input is directly injected into the SQL string
-      query = `
-        SELECT transactions.*, users.username, transactions.user_id AS userId
-        FROM transactions
-        JOIN users ON transactions.user_id = users.id
-        WHERE transactions.user_id = ${userId}
-        AND transactions.description LIKE '%${sanitized}%'
-      `
+      if (devMode) {
+        query = `
+          SELECT transactions.*, users.username, transactions.user_id AS userId
+          FROM transactions
+          JOIN users ON transactions.user_id = users.id
+          WHERE transactions.description LIKE '%${search}%'
+        `;
+      } else {
+        query = `
+          SELECT transactions.*, users.username, transactions.user_id AS userId
+          FROM transactions
+          JOIN users ON transactions.user_id = users.id
+          WHERE transactions.user_id = ${userId}
+          AND transactions.description LIKE '%${sanitized}%'
+        `;
+      }
     } else {
-    //no search term is provided
+      // regular query to view own transactions
       query = `
         SELECT transactions.*, users.username, transactions.user_id AS userId
         FROM transactions
         JOIN users ON transactions.user_id = users.id
         WHERE transactions.user_id = ${userId}
-      `
+      `;
     }
 
-    console.log("Executing query:", query)
-    const results = await db.all(query)
-    return NextResponse.json(results)
+    console.log("Executing query:", query);
+    results = await db.all(query);
+
+    // Add hint message only when suspicious input is used
+    if (hasSuspiciousChars && !devMode) {
+      return NextResponse.json({
+        mode: "production",
+        message: "Access denied in production. Development headers are required.",
+        transactions: [] // preventss injection
+      });
+    }
+
+    return NextResponse.json(results);
   } catch (err) {
-    console.error("Database error:", err)
-    return NextResponse.json({ error: "Failed to fetch transactions" }, { status: 500 })
+    console.error("Database error:", err);
+    return NextResponse.json({ error: "Failed to fetch transactions" }, { status: 500 });
   }
 }
 // POST handler
