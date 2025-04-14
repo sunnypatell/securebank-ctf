@@ -13,7 +13,6 @@ const formatCurrency = (value: number): string => { // helper func. to format cu
   }).format(value)
 }
 
-
 export default function Transactions() {
   type Transaction = {
     id: number
