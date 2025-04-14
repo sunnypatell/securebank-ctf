@@ -58,7 +58,7 @@ You know you’ve succeeded when:
 
 - ❌ No brute-force or password guessing  
 - ✅ You may register a new account  
-- ❌ Do not tamper with session cookies directly  
+- ❌ Do not tamper with session cookies directly, rather take a look at what you see when logging in, decode it.
 - ✅ Only interact through legitimate UI or API calls  
 - ✅ This is a **black-box challenge**, source code is not required to solve it
 
