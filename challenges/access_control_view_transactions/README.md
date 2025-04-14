@@ -1,4 +1,4 @@
-# 🛡️ Challenge: Access Control – View All Transactions (Dev Mode)  
+# 🛡️ Challenge: Access Control – View All Transactions  
 **Author:** Rija Baig  
 **Difficulty:** ⭐⭐⭐☆☆ (Medium)  
 
