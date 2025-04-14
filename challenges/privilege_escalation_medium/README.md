@@ -27,7 +27,9 @@ Begin your investigation here:
 
 Try interacting with the feedback feature and see what happens behind the scenes. Your messages get stored — but how safely?
 
-> 💬 There’s a **subtle clue** buried at the bottom of the **Help & FAQ** page. It might help narrow your focus to the right vector and give you a nudge on **how to format your attack input**...
+> 💬 There’s a **subtle clue** buried at the bottom of the **Help & FAQ** page. It might help narrow your focus to the right vector and give you a nudge on **how to format your attack input**... 
+
+> 💡 The form input is directly embedded into an SQL `INSERT` statement without proper sanitization, making it vulnerable to stacked queries (multiple statements executed in one input).
 
 ---
 
