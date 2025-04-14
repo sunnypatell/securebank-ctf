@@ -138,6 +138,8 @@ export default function Register() {
               <input
                 type="password"
                 id="password"
+                pattern="^[^#\-%*]*$"
+                title="Input cannot contain: -, #, *, or %"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 bg-gray-700/70 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white shadow-inner"
