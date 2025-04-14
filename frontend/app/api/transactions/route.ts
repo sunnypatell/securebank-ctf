@@ -18,6 +18,11 @@ export async function GET(req: NextRequest) {
     const db = await openDb();
     const searchParams = new URL(req.url).searchParams;
     const search = searchParams.get("search") || "";
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
+    const dateClause = (startDate && endDate)
+      ? `AND substr(transactions.date, 1, 10) BETWEEN '${startDate}' AND '${endDate}'`
+      : "";
     const devMode = req.headers.get("x-dev-mode") === "true";
     const cookieStore = req.cookies;
     const userId = parseInt(cookieStore.get("userId")?.value || "1");
@@ -25,7 +30,10 @@ export async function GET(req: NextRequest) {
     //  dev hint symbols
     const hasSuspiciousChars = /(--|;|'|\/\*|\*\/)/gi.test(search);
     const sanitized = search.replace(/(--|;|'|\/\*|\*\/)/gi, "");
-
+    console.log("search:", search)
+    console.log("startDate:", startDate)
+    console.log("endDate:", endDate)
+    console.log("devMode:", devMode)
     let query: string;
     let results;
 
@@ -37,6 +45,7 @@ export async function GET(req: NextRequest) {
           FROM transactions
           JOIN users ON transactions.user_id = users.id
           WHERE transactions.description LIKE '%${search}%'
+          ${dateClause}
         `;
       } else {
         query = `
@@ -45,6 +54,7 @@ export async function GET(req: NextRequest) {
           JOIN users ON transactions.user_id = users.id
           WHERE transactions.user_id = ${userId}
           AND transactions.description LIKE '%${sanitized}%'
+          ${dateClause}
         `;
       }
     } else {
@@ -54,6 +64,7 @@ export async function GET(req: NextRequest) {
         FROM transactions
         JOIN users ON transactions.user_id = users.id
         WHERE transactions.user_id = ${userId}
+        ${dateClause}
       `;
     }
 

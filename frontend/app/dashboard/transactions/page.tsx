@@ -127,9 +127,24 @@ export default function Transactions() {
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {/* Page Header */}
+        {/* Maintenance Warning */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+          <div className="bg-yellow-900/30 text-yellow-300 border border-yellow-600 rounded-lg p-4 shadow-sm flex items-start space-x-3">
+            <svg className="w-5 h-5 mt-0.5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+            </svg>
+            <div className="text-sm">
+              <p className="font-medium">Scheduled Maintenance</p>
+              <p className="text-yellow-200 mt-0.5">Every Wednesday from 1:00 AM to 8:00 AM. Some features may be temporarily unavailable.</p>
+            </div>
+          </div>
+        </div>
         <div className="px-4 sm:px-0 mb-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
+              <div className="mt-8">  
+              
+              </div>
               <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
                 Transaction History
               </h1>

@@ -280,6 +280,9 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="flex-grow max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {/* Welcome Banner */}
+        <div className="mb-6 bg-yellow-100 border-l-4 border-yellow-400 text-yellow-900 p-4 rounded shadow-sm text-sm font-medium">
+        NOTICE: Scheduled maintenance every <strong>Wednesday</strong> from <strong>1:00 AM</strong> to <strong>8:00 AM</strong>. During this time, certain operations may be temporarily unavailable.
+      </div>
         <div className="px-4 sm:px-0 mb-8">
           <div className="relative overflow-hidden bg-gradient-to-r from-blue-900 to-indigo-900 rounded-2xl shadow-2xl">
             <div className="absolute inset-0">
@@ -824,6 +827,7 @@ export default function Dashboard() {
             </div>
             <p className="text-gray-500 text-xs">© {new Date().getFullYear()} SecureBank. All rights reserved.</p>
           </div>
+      
         </div>
       </footer>
     </div>
