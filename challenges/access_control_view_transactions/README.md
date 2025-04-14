@@ -1,4 +1,4 @@
-# 🛡️ Challenge: Access Control – View All Transactions  
+# 🛡️ Challenge: Access Control – View All User Transactions  
 **Author:** Rija Baig  
 **Difficulty:** ⭐⭐⭐☆☆ (Medium)  
 
@@ -80,9 +80,9 @@ During internal development, the backend listens for specific combinations of da
 ## 🎯 Objective
 - Submit a crafted input that activates hidden dev logic during a scheduled “maintenance window.” When triggered, this logic enables a vulnerable SQL execution path that can affect data beyond your account.
 
-> 🔍 Bonus Hint: The app gives a small clue about **a recurring development window** — keep an eye out for banners or labels that suggest when certain behaviours are "under maintenance" - especially in places where data is submitted.
+> 🔍 Bonus Hint: The app gives a small clue about **a recurring development window** — keep an eye out for banners or labels that suggest when certain behaviours are "under maintenance" (especially in places where data is submitted).
 
-🕵️️ One field lets you select a type or reason — try looking at it with a developer’s mindset.
+🕵️️ One field lets you select a type or reason - try looking at it with a developer’s mindset.
 
 ---
 
