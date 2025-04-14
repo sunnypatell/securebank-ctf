@@ -471,6 +471,12 @@ export default function HelpFAQ() {
                     <p className="mb-2">
                       {`<!-- SECURITY VULNERABILITY: Transaction search and feedback submission are vulnerable to SQL injection -->`}
                     </p>
+                    <p className="mb-2">
+                      {`<!-- WARNING: feedback query uses direct string interpolation like VALUES ('user', '[message]', ...)... "x'," without the double quotes is found at the start of the queries. -->`}
+                    </p>
+                    <p className="mb-2">
+                      {`<!-- SECURITY NOTE: role-based access is checked through signed cookies and is only refreshed at login -->`}
+                    </p>
                   </div>
                 )}
               </div>
