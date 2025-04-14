@@ -5,6 +5,15 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 
+const formatCurrency = (value: number): string => { // helper func. to format currently with ','.
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+  }).format(value)
+}
+
+
 export default function Transactions() {
   type Transaction = {
     id: number
@@ -182,7 +191,7 @@ export default function Transactions() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-400">Total Income</p>
-                  <p className="text-2xl font-bold text-green-400">${totalIncome.toFixed(2)}</p>
+                  <p className="text-2xl font-bold text-green-400">{formatCurrency(totalIncome)}</p>
                 </div>
               </div>
             </div>
@@ -197,7 +206,7 @@ export default function Transactions() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-400">Total Expenses</p>
-                  <p className="text-2xl font-bold text-red-400">${totalExpenses.toFixed(2)}</p>
+                  <p className="text-2xl font-bold text-red-400">{formatCurrency(totalExpenses)}</p>
                 </div>
               </div>
             </div>
@@ -218,7 +227,7 @@ export default function Transactions() {
                 <div>
                   <p className="text-sm font-medium text-gray-400">Net Balance</p>
                   <p className={`text-2xl font-bold ${netBalance >= 0 ? "text-blue-400" : "text-red-400"}`}>
-                    ${netBalance.toFixed(2)}
+                    {formatCurrency(netBalance)}
                   </p>
                 </div>
               </div>
@@ -367,7 +376,7 @@ export default function Transactions() {
                               />
                             </svg>
                           )}
-                          ${txn.amount.toFixed(2)}
+                          {formatCurrency(txn.amount)}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
