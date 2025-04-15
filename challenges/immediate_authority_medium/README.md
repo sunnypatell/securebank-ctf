@@ -1,71 +1,76 @@
-# 🛡️ Challenge: Register a New Admin via SQL Injection  
-**Author:** Ajay Ariaran  
-**Difficulty:** ⭐⭐⭐☆☆ (Medium)
+# Challenge Name: **Immediate Authority**
 
 ---
 
-## 🎯 Objective
-
-Craft an SQL injection payload on the **registration page** — specifically in the **password field** — so that you end up creating a **brand-new account** with the **admin** role.
-
----
-
-## 💻 Background
-
-By default, every newly created account is assigned the role of `user`. However, the application clearly distinguishes between different roles (e.g., `user` vs. `admin`).  
-
-While traditional SQL injection attempts are seemingly blocked, not all is lost: the registration form has some input filtering, but can be bypassed through some clever use of specific tools...
-
-> 🧠 *Hint:* It’s often easy to overlook the **password** field when thinking about injection. But remember, anywhere user input meets SQL, danger lurks!
+- **Author:** Ajay Ariaran  
+- **Difficulty:** ⭐⭐⭐☆☆ (Medium)
 
 ---
 
-## 📍 Starting Point
+## What You Need to Achieve
 
-Begin your investigation at:  
-**`http://localhost:3000/register`**
+> **Goal:**  
+> Craft an SQL injection payload on the **registration page**—specifically in the **password field**—so that you end up creating a **brand-new account** with the **admin** role.
 
-Your mission:  
+---
+
+## Context & Insight
+
+**Default Roles & Distinction**  
+- By default, each newly created account is assigned the role of `user`.  
+- The application differentiates between roles (`user` vs. `admin`).
+
+**The Filtering Hurdle**  
+- Traditional SQL injection attempts are seemingly blocked.  
+- However, not all injection vectors are sealed. There is a filtering mechanism you can **bypass** with the right technique.
+
+---
+
+## Exploration Starting Point
+
+**Registration Page URL:** 
+http://localhost:3000/register
+
+Your specific tasks:  
 1. Register a new account as `admin`.  
-2. **Bypass** the client-side filters in place on the register page.  
+2. Bypass client-side filters in the registration process.
 
-> 💡 Tools like **Burp Suite** can be invaluable here. Intercepting the registration request allows you to manipulate the password field beyond the typical UI checks.
+> **Tip:**  
+> Tools like **Burp Suite** can help intercept and modify the password input, circumventing any front-end constraints.
 
 ---
 
-## 🧪 Success Criteria
+## Indicators of Success
 
-You know you've cracked it when:  
 1. You can **log in** with your newly registered account.  
-2. On inspecting your session cookie or any profile details, you see that the account is indeed set to **`admin`**.
+2. Upon checking your session cookie or profile info, the role is set to **`admin`**.
 
 ---
 
-## 🔍 Hints
+## Hints & Approaches
 
-- If you’re stuck, try rethinking how **certain SQL statements** can be shortened or disguised (e.g., using alternative comment syntax or variations of known keywords).  
+- Consider how certain SQL statements can be **abbreviated** or **disguised**.  
+- Alternative commenting methods or variations of keywords can bypass naive filters.
 
----
-
-## ✅ Rules
-
-- ✅ You **must** register a new account through the intended form.  
-- ❌ You **may not** manipulate session cookies directly.  
-- ✅ Your injection **must** occur via the **password field** during registration.
+> **Advice:**  
+> Keep iterating on your payloads, watch how the database responds, and never consider any seemingly simple payload too trivial to have an impact.
 
 ---
 
-## 🏁 Tags
+## The Rules of Engagement
+
+- **Do**: Register a new account in the intended manner.  
+- **Don’t**: Directly modify session cookies.  
+- **Must**: Inject solely through the **password field** during registration.
+
+---
+
+## Reference Tags
 
 `SQL Injection` • `Admin Role Injection` • `Access Control` • `Black-Box` • `Input Filtering Bypass`
 
 ---
+**Best of luck!**,  
+— *Ajay Ariaran*
 
-## 🧠 Final Note
 
-This challenge highlights a **dangerous oversight** in user registration systems: Improper handling of inputs. Even slight oversights can allow attackers to inject the role they desire — **right at account creation**.
-
-Stay persistent, test different injections, and keep an eye on the database’s reaction to your payloads. With a bit of creativity, you’ll prove that no security measure is airtight when faced with a determined attacker.
-
-**Best of Luck,**  
-*Ajay Ariaran*
