@@ -164,6 +164,9 @@ frontend/
 ├── README.md                       # Project documentation
 ├── tailwind.config.ts              # Tailwind CSS configuration
 └── tsconfig.json                   # TypeScript configuration
+└── Dockerfile                      # Build structset
+└── .dockerignore                   # Docker ignore file (node_modules, etc.)
+└── start.sh                        # Start script for Docker
 ```
 
 ## API and Backend
