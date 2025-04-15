@@ -49,7 +49,9 @@ export async function POST(req: Request) {
         return decodeURIComponent(decodeURIComponent(str)) // enable double decoding
     }
     /*
-    
+    Note: This code simulates a login bypass vulnerability where user input is filtered for direct 
+    SQL injection characters and single encodes, but double-encoded inputs are not properly handled. 
+    This mirrors real-world bypasses in misconfigured systems that decode inputs twice.
     */
 
     const decodedUsername = decode(username);
