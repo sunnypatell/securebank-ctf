@@ -1,28 +1,28 @@
-# Use Node base image (has OSV Vuln.)
-FROM node:18-alpine
+# Use Node base image
+FROM node:18-slim
 
-# Set working directory inside container
+# Set working directory
 WORKDIR /app
 
-# Copy package manifests and install deps
-COPY package*.json frontend/
-WORKDIR /app/frontend
-RUN npm ci
+# Copy only the app's package manifests
+COPY frontend/package*.json ./
 
+# Install dependencies
+RUN npm install
 
-# Copy rest of the app
+# Copy the rest of the app code
 COPY frontend/ ./
 
-# Copy clean backup DB and overwrite DB on every container run
+# Create backup directory and store clean DB
 RUN mkdir -p /app/backup
-COPY frontend/database.sqlite /app/frontend/backup/database.sqlite
+COPY frontend/database.sqlite /app/backup/database.sqlite
 
-# Start script will restore DB each time
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
+# Add startup script to restore DB each run
+COPY start.sh ./start.sh
+RUN chmod +x ./start.sh
 
-# Expose app port
+# Expose frontend port
 EXPOSE 3000
 
-# Start the app through custom script
-CMD ["/app/start.sh"]
+# Launch with script (resets DB and starts server)
+CMD ["./start.sh"]
