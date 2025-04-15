@@ -1,4 +1,4 @@
-# Use Node base image
+# Use Node base image (has OSV Vuln.)
 FROM node:18-alpine
 
 # Set working directory inside container
