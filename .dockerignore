@@ -1,0 +1,21 @@
+# Ignore git
+.git
+.gitignore
+
+# Ignore OS stuff
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Ignore VSCode & IDE stuff
+.vscode
+*.log
+
+# Ignore unnecessary root-level files
+challenges/
+*.pdf
+*.md
+*.tar.gz
+
+# Ignore any other big, unused files or folders
+node_modules

@@ -77,8 +77,7 @@ This challenge simulates a **real-world access control flaw**: an SQL injection 
 Your mission is to think like an attacker, craft a precise payload, and confirm the effect using nothing but the app interface.
 
 No error messages. No stack traces. Just you, the browser, and a hint left behind in the wrong place.
+---
+**Good luck, SecureBank Pentester,**
 
-Good luck, SecureBank Pentester,
--
-Sunny Patel
--
+— *Sunny Patel*

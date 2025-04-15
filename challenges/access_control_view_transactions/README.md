@@ -1,16 +1,16 @@
-# 🛡️ Challenge: Access Control – View All User Transactions  
+# Challenge: Access Control – View All Transactions (Read Access Bypass)
 **Author:** Rija Baig  
 **Difficulty:** ⭐⭐⭐☆☆ (Medium)  
 
 ---
 
-## 🎯 Objective
+## Goal
 
 Bypass access restrictions and retrieve **all user transactions**, not just your own. The application limits results per user, but a developer oversight might give you full visibility — if you know what to send.
 
 ---
 
-## 💻 Background
+## Background
 
 This banking dashboard restricts users to seeing **only their own** transactions. However, one of the devs left behind a forgotten **debugging mechanism** meant to help during development.
 
@@ -18,7 +18,7 @@ This logic is still present on the server and checks for a special condition. Wh
 
 ---
 
-## 📍 Starting Point
+## Where should you start?
 
 Start here:  
 🔗 `http://localhost:3000/dashboard/transactions`
@@ -32,11 +32,11 @@ Your job is to:
 - Inject the right header or field to trigger the hidden dev logic
 - View every user's transactions, not just your own
 
-> 🧠 Hint: Think like a developer during staging or debugging.
+>  Hint: Think like a developer during staging or debugging.
 
 ---
 
-## 🧪 Success Criteria
+##  Success Criteria
 
 You’ve completed the challenge when:
 - You view **transactions that do not belong to your user account**
@@ -46,16 +46,16 @@ You’ve completed the challenge when:
 
 ---
 
-## 🔍 Hints
+## Tips
 
 - Think about what developers might use to test endpoints during development.
 - There may be a specific **request header** that triggers an alternate code path...
 
-> 🧠 Bonus Hint: Look at request metadata… what would a dev sneak in to enable extra functionality?
+Bonus Hint: Look at request metadata… what would a dev sneak in to enable extra functionality?
 
 ---
 
-## ✅ Rules
+## Rules
 
 - ✅ You may use any browser dev tools or proxy tools (e.g., Burp)
 - ✅ You may register and log in with a normal user account
@@ -64,29 +64,29 @@ You’ve completed the challenge when:
 
 ---
 
-## 🏁 Tags
+## Tags
 
 `Access Control` • `Horizontal Privilege Escalation` • `Dev Mode` • `SQL Injection` • `API Abuse`
 
 ---
 
-## 🏰 Bonus Challenge (Optional): Time-Based SQL Injection – Trigger the Developer Backdoor
+## Bonus Challenge (Optional): Conditional SQL Injection via Transaction Form (Write Access)
 **Difficulty:** ⭐⭐⭐⭐☆ (Medium-Hard) 
 
 The `/dashboard/transactions/new` page allows users to submit a new transaction. But this isn’t just for regular users — the dev team secretly uses it for maintenance automation.
 
 During internal development, the backend listens for specific combinations of data (like certain dates or fields) to activate internal SQL scripts. This backdoor still exists in production. Under the right conditions, it enables a full SQL injection — but only if you know when and how to trigger it.
 
-## 🎯 Objective
+## Goal
 - Submit a crafted input that activates hidden dev logic during a scheduled “maintenance window.” When triggered, this logic enables a vulnerable SQL execution path that can affect data beyond your account.
 
-> 🔍 Bonus Hint: The app gives a small clue about **a recurring development window** — keep an eye out for banners or labels that suggest when certain behaviours are "under maintenance" (especially in places where data is submitted).
+Bonus Hint: The app gives a small clue about **a recurring development window** — keep an eye out for banners or labels that suggest when certain behaviours are "under maintenance" (especially in places where data is submitted).
 
-🕵️️ One field lets you select a type or reason - try looking at it with a developer’s mindset.
+ One field lets you select a type or reason - try looking at it with a developer’s mindset.
 
 ---
 
-## 🧠 Final Note
+## Summary 
 
 
 This two-part challenge explores real-world SQL injection vectors hidden in unexpected places: HTTP headers, debug modes, and dev-time scripts.
