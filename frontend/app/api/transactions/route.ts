@@ -12,7 +12,6 @@ async function openDb() {
     driver: sqlite3.Database,
   })
 }
-
 // get all transactions, vulnerable to sql injection via the search box
 export async function GET(req: NextRequest) {
   try {
@@ -27,18 +26,8 @@ export async function GET(req: NextRequest) {
     const devMode = req.headers.get("x-dev-mode") === "true";
     const cookieStore = req.cookies;
     const userId = parseInt(cookieStore.get("userId")?.value || "1");
-    const session = cookieStore.get("session")?.value;
 
-    let role = "user";
-    if (session) {
-      const secret = process.env.COOKIE_SECRET!;
-      const unsigned = require("cookie-signature").unsign(session, secret);
-      if (unsigned) {
-        const parsed = JSON.parse(unsigned);
-        role = parsed.role || "user";
-      }
-    }
-
+    //  dev hint symbols
     const hasSuspiciousChars = /(--|;|'|\/\*|\*\/)/gi.test(search);
     const sanitized = search.replace(/(--|;|'|\/\*|\*\/)/gi, "");
     console.log("search:", search)
@@ -48,9 +37,9 @@ export async function GET(req: NextRequest) {
     let query: string;
     let results;
 
-    // devMode or admin skips user-level filtering
+    // devMode skips user-level filtering
     if (search.trim()) {
-      if (devMode || role === "admin") {
+      if (devMode) {
         query = `
           SELECT transactions.*, users.username, transactions.user_id AS userId
           FROM transactions
@@ -74,7 +63,7 @@ export async function GET(req: NextRequest) {
         SELECT transactions.*, users.username, transactions.user_id AS userId
         FROM transactions
         JOIN users ON transactions.user_id = users.id
-        WHERE ${role === "admin" ? "1=1" : `transactions.user_id = ${userId}`}
+        WHERE transactions.user_id = ${userId}
         ${dateClause}
       `;
     }
@@ -83,11 +72,11 @@ export async function GET(req: NextRequest) {
     results = await db.all(query);
 
     // Add hint message only when suspicious input is used
-    if (hasSuspiciousChars && !devMode && role !== "admin") {
+    if (hasSuspiciousChars && !devMode) {
       return NextResponse.json({
         mode: "production",
         message: "Access denied in production. Development headers are required.",
-        transactions: [] // prevents injection
+        transactions: [] // preventss injection
       });
     }
 
@@ -97,9 +86,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Failed to fetch transactions" }, { status: 500 });
   }
 }
-
 // POST handler
-// This has a hidden SQL injection vulnerability that only activates on a specific date
+// This has a hidden SQL injection vulnerability that only activates on a specific datee
 export async function POST(req: Request) {
   try {
     const db = await openDb()
@@ -112,27 +100,27 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 })
     }
 
-    // simulate a developer debug hook that runs raw SQL only on maintenance Wednesdays
-    const [year, month, day] = date.split("-").map(Number)
-    const isWednesday = new Date(year, month - 1, day).getDay() === 3
-    const isDebugMode = type === "debug"
-    const isSuspiciousPayload = description.includes(";") || description.toLowerCase().includes("update")
+  // simulate a developer debug hook that runs raw SQL only on maintenance Wednesdays
+  const [year, month, day] = date.split("-").map(Number)
+  const isWednesday = new Date(year, month - 1, day).getDay() === 3
+  const isDebugMode = type === "debug"
+  const isSuspiciousPayload = description.includes(";") || description.toLowerCase().includes("update")
 
-    if (isDebugMode && isWednesday && isSuspiciousPayload) {
-      console.log("Running maintenance SQL on a Wednesday")
-      console.log("Payload:", description)
-      await db.exec(description)
-      return NextResponse.json({ success: true, message: "Injected SQL executed" })
-    }
+  if (isDebugMode && isWednesday && isSuspiciousPayload) {
+    console.log("Running maintenance SQL on a Wednesday")
+    console.log("Payload:", description)
+    await db.exec(description)
+    return NextResponse.json({ success: true, message: "Injected SQL executed" })
+  }
 
-    if (isSuspiciousPayload) {
-      return NextResponse.json(
-        { error: "Suspicious characters not allowed outside of debug mode on Wednesdays" },
-        { status: 400 }
-      )
-    }
+  if (isSuspiciousPayload) {
+    return NextResponse.json(
+      { error: "Suspicious characters not allowed outside of debug mode on Wednesdays" },
+      { status: 400 }
+    )
+  }
 
-    // default insert path
+    //  default insert path
     await db.run(
       `INSERT INTO transactions (user_id, date, description, amount, type)
        VALUES (?, ?, ?, ?, ?)`,
@@ -145,3 +133,5 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Failed to add transaction" }, { status: 500 })
   }
 }
+  
+ 
