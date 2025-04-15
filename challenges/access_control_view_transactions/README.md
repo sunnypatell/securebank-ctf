@@ -1,4 +1,4 @@
-# Challenge: Access Control – View All User Transactions  
+# Challenge: Access Control – View All Transactions (Read Access Bypass)
 **Author:** Rija Baig  
 **Difficulty:** ⭐⭐⭐☆☆ (Medium)  
 
@@ -70,7 +70,7 @@ Bonus Hint: Look at request metadata… what would a dev sneak in to enable extr
 
 ---
 
-## Bonus Challenge (Optional): Time-Based SQL Injection – Trigger the Developer Backdoor
+## Bonus Challenge (Optional): Conditional SQL Injection via Transaction Form (Write Access)
 **Difficulty:** ⭐⭐⭐⭐☆ (Medium-Hard) 
 
 The `/dashboard/transactions/new` page allows users to submit a new transaction. But this isn’t just for regular users — the dev team secretly uses it for maintenance automation.
