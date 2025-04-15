@@ -5,15 +5,17 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy package manifests and install deps
-COPY frontend/package*.json ./
+COPY package*.json frontend/
+WORKDIR /app/frontend
 RUN npm ci
 
+
 # Copy rest of the app
-COPY frontend .
+COPY frontend/ ./
 
 # Copy clean backup DB and overwrite DB on every container run
 RUN mkdir -p /app/backup
-COPY frontend/database.sqlite /app/backup/database.sqlite
+COPY frontend/database.sqlite /app/frontend/backup/database.sqlite
 
 # Start script will restore DB each time
 COPY start.sh /app/start.sh
