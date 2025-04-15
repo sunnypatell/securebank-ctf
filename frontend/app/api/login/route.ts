@@ -61,7 +61,7 @@ export async function POST(req: Request) {
         console.log("query: " + query)
         const user = db.prepare(query).get() as User;
         
-        // log in as first user username=dosentmatter%2527%2520OR%25201%253D1%2520%252F%252A&password=ggIWIN
+        // inject anything%2527%2520OR%25201%253D1%2520%252F%252A into username and any password for the attack to work
         
 
         if (user) {
