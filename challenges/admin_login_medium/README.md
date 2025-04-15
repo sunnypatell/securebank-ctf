@@ -36,7 +36,7 @@ Your job is to:
 
 You are logged in and issued a session/cookie as the **admin**.
 
-Check the `Set-Cookie` header or your dashboard permissions to verify you’re now an admin.
+You have the ability to delete feedbacks (only admins can do this)
 
 ---
 
