@@ -292,7 +292,7 @@ if (!adminExists) {
    - Search and filter functionality
    - Transaction summary cards
 
-6. **Add Transaction** (`/dashboard/transactions/add`):
+6. **Add Transaction** (`/dashboard/transactions/new`):
    - Form to add new transactions
    - Date picker
    - Transaction type selection
