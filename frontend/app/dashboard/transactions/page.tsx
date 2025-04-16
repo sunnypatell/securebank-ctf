@@ -467,7 +467,7 @@ const netBalance = totalIncome - totalExpenses;
             <button
               className="px-3 py-1 rounded-md bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50"
               disabled={currentPage === 1}
-              onClick={() => setCurrentPage(currentPage - 1)}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             >
               Previous
             </button>
@@ -477,7 +477,7 @@ const netBalance = totalIncome - totalExpenses;
             <button
               className="px-3 py-1 rounded-md bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50"
               disabled={indexOfLastItem >= filteredTransactions.length}
-              onClick={() => setCurrentPage(currentPage + 1)}
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, Math.ceil(filteredTransactions.length / itemsPerPage)))}
             >
               Next
             </button>
