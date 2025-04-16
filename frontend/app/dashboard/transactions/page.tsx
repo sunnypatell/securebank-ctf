@@ -62,23 +62,30 @@ export default function Transactions() {
   const totalExpenses = transactions?.filter((t) => t.type === "debit").reduce((sum, t) => sum + t.amount, 0) || 0
   const netBalance = totalIncome - totalExpenses
 
-  const filterByDate = (txns: Transaction[]): Transaction[] => {
-    if (dateFilter === "all") return txns;
-  
-    const now = new Date();
-    let daysAgo = 0;
-  
-    if (dateFilter === "7days") daysAgo = 7;
-    else if (dateFilter === "30days") daysAgo = 30;
-    else if (dateFilter === "90days") daysAgo = 90;
-  
-    const cutoff = new Date();
-    cutoff.setDate(now.getDate() - daysAgo);
-  
-    return txns.filter((txn) => new Date(txn.date) >= cutoff);
-  };
-  
-  const filteredTransactions = filterByDate(transactions || []);
+// Function to filter transactions based on selected date range
+const filterByDate = (txns: Transaction[]): Transaction[] => {
+  // If "All time" is selected, return all transactions unfiltered
+  if (dateFilter === "all") return txns;
+
+  const now = new Date(); // Get the current date
+  let daysAgo = 0; // Initialize how many days back to look
+
+  // Determine how many days to go back based on selected filter
+  if (dateFilter === "7days") daysAgo = 7;
+  else if (dateFilter === "30days") daysAgo = 30;
+  else if (dateFilter === "90days") daysAgo = 90;
+
+  // Calculate the cutoff date (e.g., 7 days ago)
+  const cutoff = new Date();
+  cutoff.setDate(now.getDate() - daysAgo);
+
+  // Return only transactions that occurred on or after the cutoff date
+  return txns.filter((txn) => new Date(txn.date) >= cutoff);
+};
+
+// Apply the date filter to the full transactions list
+const filteredTransactions = filterByDate(transactions || []);
+
   
 
   return (
