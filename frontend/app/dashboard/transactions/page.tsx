@@ -29,6 +29,15 @@ export default function Transactions() {
   const [isLoading, setIsLoading] = useState(true)
   const [dateFilter, setDateFilter] = useState("all")
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // 5 rows per page of transactions
+
+  useEffect(() => { //sets the page to 1 when the search or date filter changes
+    setCurrentPage(1);
+  }, [search, dateFilter]);
+  
+
+
   const fetchTransactions = async (query?: string) => {
     setIsLoading(true)
     try {
@@ -79,6 +88,12 @@ const filterByDateRange = (transactions: Transaction[]): Transaction[] => {
 
 // Apply the date range filter to the transaction list
 const filteredTransactions = filterByDateRange(transactions || []);
+
+// Vars. to see how many pages are necessary
+const indexOfLastItem = currentPage * itemsPerPage; 
+const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+const currentTransactions = filteredTransactions.slice(indexOfFirstItem, indexOfLastItem);
+
 
 // Summary card totals based only on filtered transactions
 const totalIncome = filteredTransactions
@@ -376,7 +391,7 @@ const netBalance = totalIncome - totalExpenses;
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-700/70">
-                  {filteredTransactions.map((txn) => (
+                  {currentTransactions.map((txn) => (
                     <tr key={txn.id} className="hover:bg-gray-700/30 transition-colors duration-150">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{txn.date}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{txn.description}</td>
@@ -445,27 +460,30 @@ const netBalance = totalIncome - totalExpenses;
         {/* Pagination */}
         {transactions && transactions.length > 0 && (
           <div className="mt-6 flex items-center justify-between">
-            <div className="text-sm text-gray-400">
-              Showing <span className="font-medium text-gray-300">{filteredTransactions.length}</span> transactions
-            </div>
-            <div className="flex space-x-2">
-              <button
-                className="px-3 py-1 rounded-md bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50"
-                disabled
-              >
-                Previous
-              </button>
-              <button className="px-3 py-1 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200">
-                1
-              </button>
-              <button
-                className="px-3 py-1 rounded-md bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50"
-                disabled
-              >
-                Next
-              </button>
-            </div>
+          <div className="text-sm text-gray-400">
+            Showing <span className="font-medium text-gray-300">{filteredTransactions.length}</span> transactions
           </div>
+          <div className="flex space-x-2">
+            <button
+              className="px-3 py-1 rounded-md bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(currentPage - 1)}
+            >
+              Previous
+            </button>
+            <span className="px-3 py-1 rounded-md bg-blue-600 text-white">
+              {currentPage}
+            </span>
+            <button
+              className="px-3 py-1 rounded-md bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50"
+              disabled={indexOfLastItem >= filteredTransactions.length}
+              onClick={() => setCurrentPage(currentPage + 1)}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+        
         )}
       </main>
 
