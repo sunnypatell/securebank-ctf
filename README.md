@@ -102,6 +102,11 @@ To run the application locally:
    For testing purposes, you can use the following credentials:
    - Username: `admin`
    - Password: `admin123`
+
+   or
+
+   - Username: `sunny.admin`
+   - Password: `sunny.admin123`
    
    Or register a new account through the registration page.
 
