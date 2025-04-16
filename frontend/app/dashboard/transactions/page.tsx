@@ -62,6 +62,25 @@ export default function Transactions() {
   const totalExpenses = transactions?.filter((t) => t.type === "debit").reduce((sum, t) => sum + t.amount, 0) || 0
   const netBalance = totalIncome - totalExpenses
 
+  const filterByDate = (txns: Transaction[]): Transaction[] => {
+    if (dateFilter === "all") return txns;
+  
+    const now = new Date();
+    let daysAgo = 0;
+  
+    if (dateFilter === "7days") daysAgo = 7;
+    else if (dateFilter === "30days") daysAgo = 30;
+    else if (dateFilter === "90days") daysAgo = 90;
+  
+    const cutoff = new Date();
+    cutoff.setDate(now.getDate() - daysAgo);
+  
+    return txns.filter((txn) => new Date(txn.date) >= cutoff);
+  };
+  
+  const filteredTransactions = filterByDate(transactions || []);
+  
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white">
       {/* Navigation */}
@@ -347,7 +366,7 @@ export default function Transactions() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-700/70">
-                  {transactions.map((txn) => (
+                  {filteredTransactions.map((txn) => (
                     <tr key={txn.id} className="hover:bg-gray-700/30 transition-colors duration-150">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{txn.date}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{txn.description}</td>
@@ -417,7 +436,7 @@ export default function Transactions() {
         {transactions && transactions.length > 0 && (
           <div className="mt-6 flex items-center justify-between">
             <div className="text-sm text-gray-400">
-              Showing <span className="font-medium text-gray-300">{transactions.length}</span> transactions
+              Showing <span className="font-medium text-gray-300">{filteredTransactions.length}</span> transactions
             </div>
             <div className="flex space-x-2">
               <button
