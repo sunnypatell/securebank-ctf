@@ -1,114 +1,399 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/pOgY7Lrv)
-# CTF Challenges Final Project
+# SecureBank Application
 
-This project contains the requirements for the end-of-term major project, where students will create capture the flag (CTF) challenges.
+## Overview
 
-Please add the names and GitHub usernames of all group members, as of the time of project submission, to the table below.  If only 3 members, you may delete that row.
+SecureBank is a comprehensive banking application simulation designed for educational purposes, particularly focusing on web security and SQL injection vulnerabilities. This application provides a realistic banking interface with features such as account management, transaction tracking, feedback system, and a detailed Help & FAQ section.
 
-| #  | Full Name            | GitHub Username |
-| -- | -------------------- | --------------- |
-| 1  | Daniyal Abbas Lilani      | [DaniyalLilani](https://github.com/daniyallilani/)       |
-| 2  | Sunny Patel        | [sunnypatell](https://github.com/sunnypatell/)       |
-| 3  | Robert Pianezza        | [MagneticZebra](https://github.com/MagneticZebra)       |
-| 4  | Ajay Ariaran        | [ajaya-coder](https://github.com/ajaya-coder)       |
-| 5  | Rija Baig        | [rijabaig](https://github.com/rijabaig)       |
+>**IMPORTANT NOTE**: This application contains intentional security vulnerabilities as part of a Capture The Flag (CTF) exercise focused on SQL injection. These vulnerabilities are for educational purposes only and should not be implemented in production environments.
 
-## How to Sign-Up
 
-To ensure that all groups cover a unique topic, we'll be using a [sign-up sheet](https://docs.google.com/spreadsheets/d/1E7DCOupmaAmorU9LAUU-Sh2UKbDamDHr1aGyuaPBtRc/edit?usp=sharing).  If a topic is already taken by another group, please choose another topic.  Topics should go beyond what we learned in class, but they do not need to be a brand new topic.  They can be, but they could also be an extension of a topic that we did learn.  Your presentation should cover something different than what we learned directly in the lectures, and it should be directly related to software security.
+## Table of Contents
 
-You can sign up your team now, and add your challenge topic at a later time.
+- [Features](#features)
+- [Setup and Installation](#setup-and-installation)
+- [Running Locally](#running-locally)
+- [Project Structure](#project-structure)
+- [API and Backend](#api-and-backend)
+- [Database Structure](#database-structure)
+- [Security Vulnerabilities](#security-vulnerabilities)
+- [Pages and Components](#pages-and-components)
+- [Technologies Used](#technologies-used)
+- [Development Workflow](#development-workflow)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [License](#license)
 
-All teams must have their finalized group names and topic submitted to this form by February 28th, 2025.  At that time, the form will be closed, and students not listed will be contacted to submit their topic.  Those students are likely to lose some marks, but will be allowed to register so that they can ultimately submit their challenge.
+## Features
 
-## Requirements
+SecureBank offers a comprehensive set of features designed to simulate a real banking application:
 
-### Overview
+### Account Management
+- User authentication (login/logout)
+- Account registration
+- Profile management
+- Session tracking (last login time)
 
-This project will be completed in a team of 3-4 students.  It has been designed to maximize the team member's ability to work independently.  Teams will need to organize together at the start of the project, when planning their challenges.  Individuals can then work on their challenges.  Individuals can work on their write-up or video walkthroughs for the challenges once the challenges are complete.  Finally, teams will collaborate to plan the presentation.
+### Transaction System
+- View transaction history
+- Add new transactions (credit/debit)
+- Search and filter transactions
+- Transaction categorization
 
-### CTF Challenges
+### Feedback System
+- Submit feedback on the application
+- View feedback from other users
+- Feedback history tracking
 
-Each member of the team will create one capture the flag challenge.  The type of challenge is up to the team member.  Examples could include a web application with a XSS vulnerability, an application that had a directory traversal vulnerability, an Android application with some hidden secrets to be reverse engineered, a binary that can be exploited, etc.  Students in this course should avoid easy challenges, and focus on either medium or hard difficulty.  Any challenge that covers what we did in the lectures, is acceptable as a topic.  However, it is recommended that each challenge goes a bit beyond what we learned (but still relevant within software security).  If you are uncertain if a topic is relevant/appropriate, you are welcome to verify with the instructor.
+### Help & FAQ Center
+- Comprehensive FAQ section organized by categories
+- Searchable FAQ database
+- Quick tips and security recommendations
+- Additional help resources
 
-As this will be marked subjectively, here are some tips to ensure that your challenge is as good as possible:
+### Security Features (and Intentional Vulnerabilities)
+- Password protection
+- Session management with signed cookies
+- Secure routing
+- Intentional SQL injection vulnerabilities for educational purposes
 
-- A more difficult challenge (within reason) is harder to implement, and as such will be more valuable
-- A challenge that goes beyond what we've done in the course is significantly more valuable
-- The challenge must be related to what we've learned in the course, and should be easy to learn based on the knowledge already obtained in the course
-- The uniqueness of the challenge will be a big asset, so challenges that are nearly identical to challenges part of other platforms (e.g. bWAPP, Juice Shop, Hack the Box) will not be as valuable.
+## Setup and Installation
 
-Each challenge will be in the same repository, but within a directory which will follow the format `challenge_name_difficulty_level`.  For example, a challenge named `Find the Password` which is Medium difficulty, could be in a directory named `find_the_password_medium`.
+### Prerequisites
 
-_**Note:**  All students in the course must have a unique challenge, and must do the work on their challenge on their own.  It is ok to discuss and plan collaboratively, but the coding should be done by each team member, individually.  For the same reason, using generative AI is also not permitted._
+- Node.js (v18.0.0 or higher)
+- npm (v8.0.0 or higher)
 
-#### Web-based Challenge
+### Installation Steps
 
-If you choose to create a web application for your challenge, you will need to include everything required in order to run your web application in Docker.  If you are new to Docker, here are some basic instructions on [how to use Docker to deploy your web application](https://www.docker.com/blog/docker-for-web-developers/).  Place all required files to deploy your application within your challenge directory, and include a `HOW_TO_RUN.md` which includes the docker command to execute your web application.  This file should not be big, as only the docker command should be required.
+1. **Navigate to Project Directory (from Root)**:
+```bash
+   cd frontend
+   ```
 
-_**Note:** Definitely, try to clone the repository on a fresh virtual machine, and run it in docker to verify that this deployment will work._
+2. **Install dependencies**:
+```bash
+   npm ci
+```
+   Note: We use `npm ci` instead of `npm install` to ensure exact versions from package-lock.json are installed.
 
-#### Binary Challenge
+3. **Set up environment variables (Already comitted in Repo)**:
+   Create a `.env.local` file in the root directory with the following variables:
+   # Required for cookie signing
+   `COOKIE_SECRET=p9Y!2m@lK8z$1WqA7&dE4Xu0Cj`
 
-If your challenge is based on a compiled binary, simply include the resulting binary, a description of the platform required to execute that binary, and the source code used.  For example, you could use the following format:
+## Running Locally
 
-`PLATFORM.md` - describe the platform requirements (e.g. Linux, amd64, libraries required)
-`/bin` - contains your binary
-`/src` - contains the source code
-`Makefile` - the makefile to build your code
+To run the application locally:
 
-_**Note:** Using another build tool is acceptable, but be sure that it is obvious how to use it._
+1. **Navigate to Project Directory (from Root)**:
+```bash
+   cd frontend
+   ```
 
-#### Mobile Challenge
+2. **Start the development server**:
+```bash
+   npm run dev
+   ```
 
-If your challenge is based on a compiled binary, simply include the resulting binary, a description of the platform required to execute that binary, and the source code used.  For example, you could use the following format:
+3. **Access the application**:
+   Open your browser and navigate to `http://localhost:3000`
 
-`<your_app_name>.apk` - the final android package file to be deployed on a virtual or real device
-`/project` - the Android Studio project, including the original source code
+4. **Login credentials**:
+   For testing purposes, you can use the following credentials:
+   - Username: `admin`
+   - Password: `admin123`
+   
+   Or register a new account through the registration page.
 
-_**Note:** Be sure to have an appropriate `.gitignore` file to avoid unnecessarily large repositories._
 
-#### Other Challenges
+## Project Structure
 
-If your challenge doesn't match any of the examples above, such as a game hacking challenge, be sure to contact the instructor to verify that your challenge will be accepted.  The format of submission may differ, depending on the nature of the challenge.
+```
+frontend/
+├── app/                            # Next.js App Router directory
+│   ├── api/                        # API routes for backend functionality
+│   │   ├── feedback/               # Feedback API endpoints
+│   │   │   └── route.ts
+│   │   ├── get-session/            # Session management endpoints
+│   │   │   └── route.ts
+│   │   ├── login/                  # Authentication endpoints
+│   │   │   └── route.ts
+│   │   ├── logout/                 # Logout functionality
+│   │   │   └── route.ts
+│   │   ├── register/               # User registration
+│   │   │   └── route.ts
+│   │   └── transactions/           # Transaction management
+│   │       └── route.ts
+│   ├── dashboard/                  # Dashboard pages
+│   │   ├── feedback/               # Feedback system
+│   │   │   └── page.tsx
+│   │   ├── transactions/           # Transaction management
+│   │   │   ├── add/
+│   │   │   │   └── page.tsx        # Add transaction form
+│   │   │   └── page.tsx            # Transaction list
+│   │   └── page.tsx                # Main dashboard
+│   ├── help-faq/                   # Help & FAQ section
+│   │   └── page.tsx
+│   ├── login/                      # Login page
+│   │   └── page.tsx
+│   ├── public/                     # Public discussions page
+│   │   └── discussions/
+│   │       └── page.tsx
+│   ├── register/                   # Registration page
+│   │   └── page.tsx
+│   ├── globals.css                 # Global CSS styles
+│   ├── layout.tsx                  # Root layout
+│   └── page.tsx                    # Landing page
+├── components/                     # Shared components (not shown in file structure)
+│   ├── ui/                         # UI components
+│   └── ...
+├── database/                       # Database configuration and setup
+│   └── db.ts                       # SQLite database initialization
+├── lib/                            # Utility functions and libraries
+│   └── utils.ts
+├── public/                         # Static assets
+│   ├── digital-flow.png
+│   ├── interconnected-banking.png
+│   └── secure-future-hands.png
+├── .env.local                      # Environment variables
+├── .eslintrc.json                  # ESLint configuration
+├── .gitignore                      # Git ignore file
+├── database.sqlite                 # SQLite database file
+├── next.config.mjs                 # Next.js configuration
+├── package.json                    # Project dependencies
+├── README.md                       # Project documentation
+├── tailwind.config.ts              # Tailwind CSS configuration
+└── tsconfig.json                   # TypeScript configuration
+└── Dockerfile                      # Build structset
+└── .dockerignore                   # Docker ignore file (node_modules, etc.)
+└── start.sh                        # Start script for Docker
+```
 
-### Write-Up or Video Walkthrough
+## API and Backend
 
-Each member of the team will create either a write-up or a video walkthrough, showing how to solve the challenge that was created by one of their teammates.
+The application uses Next.js App Router API routes to handle backend functionality. Each API endpoint is implemented as a route handler in the `app/api` directory.
 
-A write-up is a step-by-step guide that shows how to solve the challenge, often with screenshots of every step along the way.  A video walkthrough is similar, but a screen capture of the process of solving it.  In both cases, it is recommended that you fully solve the challenge before you attempt the write-up.  However, keep notes of what commands you used as you solve the challenge, to make it easier to create the write-up/walkthrough.  The final write-up will be in its own folder, in a file named `WRITEUP.md` within that folder.  Any supplemental files needed as part of your write-up will be included in this folder, also.
+### API Structure
 
-If you are doing a video walkthrough, then you will create a file `WALKTHROUGH_VIDEO.md` file within your folder, instead.  This file will contain a link to your walkthrough video.  If you are ok with your walkthrough being made public, I suggest you post it using YouTube.  If you do not want it to be publicly accessible, then I suggest that you use a Google Drive link for your video.
+- **`/api/feedback`**: Manages user feedback submissions and retrieval
+- **`/api/get-session`**: Handles session management and user information retrieval
+- **`/api/login`**: Authenticates users and creates secure sessions
+- **`/api/logout`**: Terminates user sessions
+- **`/api/register`**: Handles new user registration
+- **`/api/transactions`**: Manages transaction creation and retrieval
 
-_**Note:**  Team members cannot create a write-up or video walkthrough of their own challenge.  They must solve one of the challenges by the other team member._
+### Authentication Flow
 
-### Presentation
+The application uses signed cookies for secure authentication:
 
-In the final week of classes, each team will choose one of their challenges to highlight and will give a presentation about it.  The presentation will be limited to roughly 8 minutes per group, and will consist of the following:
+1. User submits login credentials
+2. Server validates credentials against the database
+3. On successful authentication, a signed session cookie is created using cookie-signature
+4. Session information includes username and role
+5. Protected routes verify the session cookie before granting access
 
-1. Introduction to the specific vulerability (or vulnerabilities) present in the challenge (~2 mins)
-2. An overview of how to exploit this vulnerability (~2 mins)
-3. A quick demonstration of exploitation of the vulnerability (~2 mins)
-4. A description of how to protect against this vulnerability (~2 mins)
+Example from the login route handler:
 
-Any slides or other materials should be made available, either by putting the files into the `presentation` folder, and/or by providing a link to them from a `PRESENTATION.md` file within that folder, as part of your submission.
+```typescript
+// Create signed session cookie
+const sessionData = JSON.stringify({ username: decodedUsername, role: user.role });
+const secret = process.env.COOKIE_SECRET!;
+const signedSession = cookieSignature.sign(sessionData, secret);
 
-_**Note:** Since all members of the group will be required to participate in this presentation, it makes sense that all of the challenges created by that team are part of the same category._
+// Set the cookie
+(await cookies()).set("session", signedSession, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 60 * 60 * 24, // 1-day expiration
+    path: "/",
+});
+```
 
-## Rubric
+## Database Structure
 
-The marks for all aspects of this project will be subjective.  This is because this project is serving as our final exam.  As a result, expectations are high.  Careful thought should be put into your challenge to ensure that it is the best representation of the knowledge that you have gained in this course.  The expectation is approximately 30 hours of work for each student.  The challenge that best implements each component, as assessed by the markers, will receive the top grade for that component.  The top mark may not be the same for each marking component.
+The application uses SQLite with better-sqlite3 for data storage. The database schema is defined in `database/db.ts`:
 
-| Weight      | Component                     |
-| ----------- | ----------------------------- |
-|  5 marks    | Group presentation            |
-| 12 marks    | Challenge                     |
-|  8 marks    | Write-up or video walkthrough |
+### Tables
 
-_**Note:** Git logs and source code will be examined to ensure that this work has been split evenly among the team members.  When the work done is pretty even between the team members, teams will be scored collectively and receive the same grade.  If the work done is substantially different, then team members will be given individual scores that reflect on their own contributions to the project._
+1. **Users**
+```sql
+   CREATE TABLE IF NOT EXISTS Users (
+     id INTEGER PRIMARY KEY AUTOINCREMENT,
+     username VARCHAR(1000) UNIQUE,
+     password VARCHAR(1000),
+     role VARCHAR(1000)
+   );
+```
 
-## How to Submit
+2. **Transactions**
+```sql
+   CREATE TABLE IF NOT EXISTS Transactions (
+     id INTEGER PRIMARY KEY AUTOINCREMENT,
+     sender VARCHAR(1000), 
+     recipient VARCHAR(1000),  
+     amount INTEGER
+   );
+```
 
-Accepting this assignment has created a clone of this repository in your own GitHub accounts.  You will be expected to push your code for all of the team's challenges to this repository.  
+3. **Feedback**
+```sql
+   CREATE TABLE IF NOT EXISTS feedback (
+     id INTEGER PRIMARY KEY AUTOINCREMENT,
+     user TEXT NOT NULL,
+     message TEXT NOT NULL,
+     date TEXT DEFAULT CURRENT_TIMESTAMP,
+     read BOOLEAN DEFAULT 0
+   );
+```
 
-Students' GitHub usernames do not always match students' real names.  So, in order for the markers to identify the students involved, one of the members of the team must submit the URL of their repository to Canvas, with all of the team members' names at the top.  It does not matter who submits, and you are welcome to do so collectively.
+### Database Initialization
+
+The database is initialized with a default admin user if one doesn't exist:
+
+```typescript
+// Inserts a hardcoded admin user if none exists
+const adminExists = db.prepare("SELECT * FROM Users WHERE username = 'admin'").get();
+
+if (!adminExists) {
+  db.prepare("INSERT INTO Users (username, password, role) VALUES (?, ?, ?)").run(
+    "admin",
+    "admin123",
+    "admin"
+  );
+  console.log("Admin user created: admin / admin123");
+} else {
+  console.log("Admin user already exists.");
+}
+```
+
+### Main Pages
+
+1. **Landing Page** (`/`):
+   - Introduction to SecureBank
+   - Login and registration links
+   - Animated background using Vanta.js
+
+2. **Login Page** (`/login`):
+   - User authentication form
+   - Error handling for invalid credentials
+   - Link to registration page
+
+3. **Registration Page** (`/register`):
+   - New user registration form
+   - Password confirmation
+   - Form validation
+
+4. **Dashboard** (`/dashboard`):
+   - Account overview
+   - Recent transactions
+   - Financial statistics
+   - Quick links to other sections
+
+5. **Transactions** (`/dashboard/transactions`):
+   - Transaction history table
+   - Search and filter functionality
+   - Transaction summary cards
+
+6. **Add Transaction** (`/dashboard/transactions/new`):
+   - Form to add new transactions
+   - Date picker
+   - Transaction type selection
+
+7. **Feedback** (`/dashboard/feedback`):
+   - Feedback submission form
+   - Feedback history
+   - Statistics on feedback
+
+8. **Help & FAQ** (`/help-faq`):
+   - Categorized FAQ sections
+   - Search functionality (vulnerable to SQL injection)
+   - Contact information
+
+### Key Components
+
+1. **Navigation Bar**:
+   - Present on all authenticated pages
+   - Links to main sections
+   - Logout button
+
+2. **Transaction Cards**:
+   - Display transaction information
+   - Color-coded by transaction type
+
+3. **FAQ Accordion**:
+   - Expandable FAQ items
+   - Category filtering
+
+4. **Search Components**:
+   - Present in transactions and FAQ pages
+   - Vulnerable to SQL injection (intentionally)
+
+5. **Form Components**:
+   - Login, registration, transaction, and feedback forms
+   - Input validation
+
+## Technologies Used
+
+### Frontend
+- **Next.js**: React framework for server-rendered applications
+- **React**: JavaScript library for building user interfaces
+- **TypeScript**: Typed superset of JavaScript
+- **Tailwind CSS**: Utility-first CSS framework
+- **Vanta.js**: 3D animated backgrounds on login screen.
+
+### Backend
+- **Next.js API Routes**: Server-side API endpoints
+- **better-sqlite3**: SQLite database driver for Node.js
+- **cookie-signature**: For signing and verifying cookies
+- **next/headers**: For cookie management in route handlers
+
+### Development Tools
+- **ESLint**: JavaScript linting utility
+- **Prettier**: Code formatter
+- **Git**: Version control system
+
+## Development Workflow
+
+### Code Organization
+
+- **Pages**: Located in the `app` directory following Next.js App Router conventions
+- **API Routes**: Server-side endpoints in the `app/api` directory
+- **Components**: Reusable UI elements in the `components` directory
+- **Database**: SQLite setup and schema in the `database` directory
+- **Styles**: Tailwind CSS utility classes with global styles in `globals.css`
+- **Utils**: Helper functions in the `lib` directory
+
+### Adding New Features
+
+1. Create new components in the `components` directory
+2. Add new pages in the appropriate directories under `app`
+3. Implement API endpoints in the `app/api` directory
+4. Update database schema if necessary at `database/db.ts`
+5. Test the feature locally
+6. Commit changes with descriptive commit messages
+
+### Best Practices
+
+- Follow TypeScript type definitions
+- Use React hooks for state management
+- Implement responsive design using Tailwind's responsive utilities
+- Keep components small and focused on a single responsibility
+- Use semantic HTML elements
+- Properly sanitize user inputs in production code (intentionally not done in some places for CTF)
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+## Disclaimer
+
+This application contains intentional security vulnerabilities for educational purposes. Do not use this code in production environments without addressing these vulnerabilities. The creators of this application are not responsible for any misuse or damage caused by the code.
+
+---
+
+*Last updated: April 15, 2025*
+
+*Created for educational purposes only for CSCI3540U - Ontario Tech - CTF Final Major Project.*

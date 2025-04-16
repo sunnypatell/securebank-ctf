@@ -42,4 +42,18 @@ if (!adminExists) {
   console.log("Admin user already exists.");
 }
 
+// Inserts a hardcoded sunny.admin user if none exists
+const sunnyAdminExists = db.prepare("SELECT * FROM Users WHERE username = 'sunny.admin'").get();
+
+if (!sunnyAdminExists) {
+  db.prepare("INSERT INTO Users (username, password, role) VALUES (?, ?, ?)").run(
+    "sunny.admin",
+    "sunny.admin123",
+    "admin"
+  );
+  console.log("Admin user created: sunny.admin / sunny.admin123");
+} else {
+  console.log("sunny.admin user already exists.");
+}
+
 export default db;
