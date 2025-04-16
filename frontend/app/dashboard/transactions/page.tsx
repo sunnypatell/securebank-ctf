@@ -57,36 +57,39 @@ export default function Transactions() {
     }
   }
 
-  // Calculate totals for the summary cards
-  const totalIncome = transactions?.filter((t) => t.type === "credit").reduce((sum, t) => sum + t.amount, 0) || 0
-  const totalExpenses = transactions?.filter((t) => t.type === "debit").reduce((sum, t) => sum + t.amount, 0) || 0
-  const netBalance = totalIncome - totalExpenses
+  // Helper function to filter transactions based on selected date range
+const filterByDateRange = (transactions: Transaction[]): Transaction[] => {
+  const now = new Date(); // current date
 
-// Function to filter transactions based on selected date range
-const filterByDate = (txns: Transaction[]): Transaction[] => {
-  // If "All time" is selected, return all transactions unfiltered
-  if (dateFilter === "all") return txns;
-
-  const now = new Date(); // Get the current date
-  let daysAgo = 0; // Initialize how many days back to look
-
-  // Determine how many days to go back based on selected filter
-  if (dateFilter === "7days") daysAgo = 7;
-  else if (dateFilter === "30days") daysAgo = 30;
-  else if (dateFilter === "90days") daysAgo = 90;
-
-  // Calculate the cutoff date (e.g., 7 days ago)
-  const cutoff = new Date();
-  cutoff.setDate(now.getDate() - daysAgo);
-
-  // Return only transactions that occurred on or after the cutoff date
-  return txns.filter((txn) => new Date(txn.date) >= cutoff);
+  switch (dateFilter) {
+    case "7days":
+      // Keep only transactions from the last 7 days
+      return transactions.filter(t => new Date(t.date) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000));
+    case "30days":
+      // Keep only transactions from the last 30 days
+      return transactions.filter(t => new Date(t.date) >= new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
+    case "90days":
+      // Keep only transactions from the last 90 days
+      return transactions.filter(t => new Date(t.date) >= new Date(Date.now() - 90 * 24 * 60 * 60 * 1000));
+    default:
+      // If "all", return everything
+      return transactions;
+  }
 };
 
-// Apply the date filter to the full transactions list
-const filteredTransactions = filterByDate(transactions || []);
+// Apply the date range filter to the transaction list
+const filteredTransactions = filterByDateRange(transactions || []);
 
-  
+// Summary card totals based only on filtered transactions
+const totalIncome = filteredTransactions
+  .filter(t => t.type === "credit")
+  .reduce((sum, t) => sum + t.amount, 0);
+
+const totalExpenses = filteredTransactions
+  .filter(t => t.type === "debit")
+  .reduce((sum, t) => sum + t.amount, 0);
+
+const netBalance = totalIncome - totalExpenses;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white">
