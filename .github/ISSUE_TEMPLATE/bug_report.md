@@ -1,32 +1,52 @@
 ---
 name: Bug report
-about: Create a report to help us improve
-title: "[BUG]"
-labels: ''
+about: Report a bug to help us improve SecureBank
+title: "[BUG] Brief summary here"
+labels: bug
 assignees: sunnypatell
+---
+
+## 🐞 Describe the bug
+
+Clearly explain what went wrong. What’s not working as expected?
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+## 🔁 Steps to Reproduce
 
-**To Reproduce**
-Steps to reproduce the behavior:
+List the exact steps to trigger the bug.
+
 1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+2. Click on '...'
+3. See error/issue '...'
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+---
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+## ✅ Expected behavior
 
-**Desktop (please complete the following information):**
- - OS: [e.g. Kali Linux]
- - Browser [e.g. chrome, burpsuite]
- - Version [e.g. 22]
+What did you expect to happen instead?
 
-**Additional context**
-Add any other context about the problem here.
+---
+
+## 📸 Screenshots or Logs
+
+Include any screenshots, console output, or error logs that help illustrate the issue.
+
+---
+
+## 💻 Environment
+
+- **OS**: (e.g. Kali Linux, macOS, Windows 11)
+- **Browser/Tool**: (e.g. Chrome, Firefox, Burp Suite)
+- **Version/Branch**: (e.g. v1.1.0, latest `main` commit)
+
+---
+
+## 📝 Additional context
+
+Include any other info you think might be useful — challenge attempted, logged-in role, etc.
+
+---
+
+/kind bug
+/triage needed
