@@ -12,3 +12,7 @@ frontend/dist
 # Editor / OS files
 .DS_Store
 *.log
+
+Dockerfile
+docker-compose.yml
+

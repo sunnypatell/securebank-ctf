@@ -16,6 +16,7 @@ RUN npm ci
 
 # Build the Next.js application ahead of time
 FROM deps AS builder
+ENV NODE_OPTIONS="--max-old-space-size=8192"
 COPY frontend/ ./
 RUN npm run build
 RUN npm prune --omit=dev
