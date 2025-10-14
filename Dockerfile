@@ -42,7 +42,7 @@ COPY --from=builder /app/database ./database
 COPY --from=builder /app/database.sqlite ./database.sqlite
 COPY --from=builder /app/seed ./seed
 COPY --from=builder /app/next.config.ts ./next.config.ts
-COPY --from=builder /app/.env.local ./.env.local
+# COPY --from=builder /app/.env.local ./.env.local
 
 # Startup script handles database seeding & persistence awareness
 COPY start.sh /usr/local/bin/start.sh
