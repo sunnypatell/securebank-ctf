@@ -60,7 +60,7 @@ SecureBank offers a comprehensive set of features designed to simulate a real ba
 
 ### Prerequisites
 
-- Node.js (v18.0.0 or higher)
+- Node.js (v20.x recommended)
 - npm (v8.0.0 or higher)
 
 ### Installation Steps
@@ -109,6 +109,56 @@ To run the application locally:
    - Password: `sunny.admin123`
    
    Or register a new account through the registration page.
+
+
+## Running with Docker
+
+To provide a consistent target for workshops or CTF events, you can run SecureBank in a container. The image bakes in a pristine copy of the SQLite database while still allowing each container instance to persist its own progress across restarts.
+
+1. **Build the image** (from the repository root):
+
+   ```bash
+   docker build -t securebank-ctf .
+   ```
+
+   > **Note:** The container image uses the `node:20-slim` runtime. Next.js 15 can trigger fatal `invalid size` build errors on
+   > Node 18, so ensure you are building with Node 20 or later for a reliable experience across Windows, macOS, and Linux.
+
+2. **Start the container** using the volume syntax that matches your platform. All examples below persist progress in a folder or volume named `securebank-data`:
+
+   - **Linux / macOS / WSL / Kali**
+
+     ```bash
+     docker run --rm -p 3000:3000 \
+       -v "$(pwd)/securebank-data:/app/data" \
+       --name securebank securebank-ctf
+     ```
+
+   - **Windows PowerShell**
+
+     ```powershell
+     docker run --rm -p 3000:3000 `
+       -v ${PWD}/securebank-data:/app/data `
+       --name securebank securebank-ctf
+     ```
+
+   - **Named Docker volume (works everywhere)**
+
+     ```bash
+     docker volume create securebank-data
+     docker run --rm -p 3000:3000 \
+       -v securebank-data:/app/data \
+       --name securebank securebank-ctf
+     ```
+
+   The first time the container starts it seeds `/app/data/database.sqlite` from a clean snapshot. Subsequent restarts reuse the same database file, so solved challenges and created users remain intact until you delete the mounted directory or volume.
+
+3. **Access the application** at `http://localhost:3000` using the credentials above or create your own accounts.
+
+> **Tips:**
+> - You can omit the volume flag for stateless demos—the app will still boot with the seeded database but progress will reset whenever the container is removed.
+> - Override the intentionally insecure cookie secret by passing `-e COOKIE_SECRET=your-secret-here` to `docker run`.
+> - Change the published port by supplying `-e PORT=4000 -p 4000:4000`.
 
 
 ## Project Structure
