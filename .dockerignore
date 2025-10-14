@@ -1,21 +1,14 @@
-# Ignore git
+# Ignore Git metadata
 .git
 .gitignore
 
-# Ignore OS stuff
+# Node build artifacts
+frontend/node_modules
+frontend/.next
+frontend/.turbo
+frontend/coverage
+frontend/dist
+
+# Editor / OS files
 .DS_Store
-Thumbs.db
-desktop.ini
-
-# Ignore VSCode & IDE stuff
-.vscode
 *.log
-
-# Ignore unnecessary root-level files
-challenges/
-*.pdf
-*.md
-*.tar.gz
-
-# Ignore any other big, unused files or folders
-node_modules
