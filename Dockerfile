@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Base image for all stages
-FROM node:18-slim AS base
+FROM node:20-slim AS base
 WORKDIR /app
 
 # Install native build prerequisites and lock down dependencies
