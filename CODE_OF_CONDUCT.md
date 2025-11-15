@@ -1,3 +1,9 @@
+<div align="center">
+  <h1>Code of Conduct</h1>
+  <p>We commit to a welcoming, harassment‑free community for all contributors and participants.</p>
+  <p>Report issues to: <a href="mailto:sunnypatel124555@gmail.com">sunnypatel124555@gmail.com</a></p>
+</div>
+
 # Contributor Covenant Code of Conduct
 
 ## Our Pledge

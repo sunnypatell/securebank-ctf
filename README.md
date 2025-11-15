@@ -1,3 +1,248 @@
+<div align="center">
+  <h1>🏦 SecureBank CTF</h1>
+  <p><i>Intentionally vulnerable banking app for hands-on web security training.</i></p>
+
+  <a href="https://github.com/sunnypatell/securebank-ctf"><img alt="Repo" src="https://img.shields.io/badge/GitHub-securebank--ctf-181717?logo=github"></a>
+  <img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg">
+  <img alt="Next" src="https://img.shields.io/badge/Next.js-15-black?logo=next.js">
+  <img alt="React" src="https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white">
+  <img alt="Node" src="https://img.shields.io/badge/Node.js-%E2%89%A5%2018-339933?logo=node.js&logoColor=white">
+  <img alt="Docker" src="https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white">
+  <img alt="PRs" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg">
+</div>
+
+<br/>
+
+> IMPORTANT: This app contains intentional security vulnerabilities as part of a Capture The Flag (CTF) exercise focused on SQL injection and access control. Do not deploy as-is to production.
+
+## Contents
+
+- Overview
+- Quick Start
+- Docker Usage
+- Project Structure
+- Features
+- Tech Stack
+- Architecture
+- API Endpoints
+- Database Schema
+- Pages & Components
+- CTF Challenges
+- Development Workflow
+- Security Policy
+- Contributing
+- License
+
+## Overview
+
+SecureBank is a full‑stack banking simulation used for teaching web security. It models a realistic interface with login/registration, transactions, feedback, and an FAQ center — with deliberately vulnerable paths for SQLi and access control exercises.
+
+## Quick Start
+
+- Prerequisites: Node.js 18+, npm 8+
+
+Windows PowerShell:
+
+```powershell
+cd frontend
+npm ci
+npm run dev
+# Open http://localhost:3000
+```
+
+macOS/Linux/WSL:
+
+```bash
+cd frontend
+npm ci
+npm run dev
+# Open http://localhost:3000
+```
+
+Default demo credentials (or register your own):
+- Username: `admin` | Password: `admin123`
+- Username: `sunny.admin` | Password: `sunny.admin123`
+
+Environment:
+- Create `frontend/.env.local` with `COOKIE_SECRET=...` (a strong random string). Note: the repository includes a default secret for convenience; replace for demonstrations if desired.
+
+## Docker Usage
+
+From the repository root:
+
+```bash
+docker build -t securebank-ctf .
+```
+
+Persist progress to a host directory or named volume:
+
+Linux/macOS/WSL/Kali
+```bash
+docker run --rm -p 3000:3000 \
+  -v "$(pwd)/securebank-data:/app/data" \
+  --name securebank securebank-ctf
+```
+
+Windows PowerShell
+```powershell
+docker run --rm -p 3000:3000 `
+  -v ${PWD}/securebank-data:/app/data `
+  --name securebank securebank-ctf
+```
+
+Named Docker volume
+```bash
+docker volume create securebank-data
+docker run --rm -p 3000:3000 \
+  -v securebank-data:/app/data \
+  --name securebank securebank-ctf
+```
+
+Notes:
+- First start seeds `/app/data/database.sqlite` from a clean snapshot; subsequent restarts reuse the same DB.
+- Omit the volume for ephemeral demos (progress resets on container removal).
+- Override cookie secret: `-e COOKIE_SECRET=your-secret`.
+- Change port: `-e PORT=4000 -p 4000:4000`.
+
+## Project Structure
+
+```
+securebank-ctf/
+├─ challenges/
+│  ├─ access_control_view_transactions/
+│  ├─ admin_login_medium/
+│  ├─ immediate_authority_medium/
+│  ├─ privilege_escalation_medium/
+│  └─ user_credentials_medium/
+├─ frontend/
+│  ├─ app/
+│  │  ├─ api/{feedback,get-session,login,logout,register,transactions}
+│  │  ├─ dashboard/{feedback,transactions,new}
+│  │  ├─ help-faq/ • login/ • register/ • public/discussions/
+│  │  └─ layout.tsx • page.tsx • globals.css
+│  ├─ database/db.ts
+│  ├─ lib/{utils.ts,next-connect.d.ts}
+│  ├─ public/*
+│  └─ package.json • tailwind.config.ts • tsconfig.json
+├─ Dockerfile • start.sh
+├─ README.md • CONTRIBUTING.md • CODE_OF_CONDUCT.md • SECURITY.md • Outline.md
+└─ LICENSE
+```
+
+## Features
+
+- Account management: login/logout, registration, session tracking
+- Transactions: history, search/filter, add new entries
+- Feedback: submit, list, and admin delete
+- Help & FAQ: categorized content; intentionally vulnerable search
+- Security model: signed session cookies, intentional SQLi/logic flaws for CTF
+
+## Tech Stack
+
+- Frontend: Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS
+- Backend: Next.js API routes, `better-sqlite3`, `cookie-signature`
+- Data: SQLite (no ORM), in‑repo seeded DB for workshops
+- Tooling: ESLint, Prettier, Docker
+
+## Architecture
+
+- App Router pages in `frontend/app/*` with colocated route handlers in `app/api/*`
+- SQLite via `better-sqlite3` configured in `frontend/database/db.ts`
+- Auth via signed cookie containing `{ username, role }`
+
+## API Endpoints
+
+- `POST /api/login` • `POST /api/logout` • `POST /api/register`
+- `GET /api/get-session` • `GET/POST /api/feedback` • `GET/POST /api/transactions`
+
+Example cookie creation (from login route):
+
+```ts
+const sessionData = JSON.stringify({ username: decodedUsername, role: user.role });
+const signedSession = cookieSignature.sign(sessionData, process.env.COOKIE_SECRET!);
+(await cookies()).set("session", signedSession, {
+  httpOnly: true, secure: process.env.NODE_ENV === "production",
+  sameSite: "strict", maxAge: 60 * 60 * 24, path: "/",
+});
+```
+
+## Database Schema
+
+Tables
+
+```sql
+CREATE TABLE IF NOT EXISTS Users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username VARCHAR(1000) UNIQUE,
+  password VARCHAR(1000),
+  role VARCHAR(1000)
+);
+
+CREATE TABLE IF NOT EXISTS Transactions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  sender VARCHAR(1000),
+  recipient VARCHAR(1000),
+  amount INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS feedback (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user TEXT NOT NULL,
+  message TEXT NOT NULL,
+  date TEXT DEFAULT CURRENT_TIMESTAMP,
+  read BOOLEAN DEFAULT 0
+);
+```
+
+Seed admin if missing (excerpt):
+
+```ts
+const adminExists = db.prepare("SELECT * FROM Users WHERE username = 'admin'").get();
+if (!adminExists) db.prepare("INSERT INTO Users (username, password, role) VALUES (?, ?, ?)").run("admin","admin123","admin");
+```
+
+## Pages & Components
+
+- Landing `/` • Login `/login` • Register `/register`
+- Dashboard `/dashboard` with Transactions `/dashboard/transactions` and Add New `/dashboard/transactions/new`
+- Feedback `/dashboard/feedback`
+- Help & FAQ `/help-faq` (intentionally vulnerable search)
+
+Key components: navigation, transaction cards, FAQ accordion, search and form components.
+
+## CTF Challenges
+
+- Access Control – View All Transactions (Medium): Trigger hidden dev logic and bypass per‑user filters to list all transactions. See `challenges/access_control_view_transactions`.
+- Login as Admin via Double‑Encoded Injection (Medium): Bypass filters using URL‑double‑encoded payloads to log in as admin. See `challenges/admin_login_medium`.
+- Immediate Authority (Medium): Inject via registration password to create an account with admin role. See `challenges/immediate_authority_medium`.
+- Privilege Escalation via Feedback Injection (Medium): Stack queries via feedback to elevate your own role, then relogin. See `challenges/privilege_escalation_medium`.
+- SQLi in Feedback Form – Dump Credentials (Medium): Exfiltrate `Users` table credentials by injecting into the feedback form. See `challenges/user_credentials_medium`.
+
+## Development Workflow
+
+- Code organization: `app` (pages), `app/api` (endpoints), `components`, `database`, `lib`, `globals.css`
+- Adding features: create components/pages, add API handlers, update DB (if needed), test locally, commit with descriptive messages
+- Practices: typed code, small focused components, responsive UI, semantic HTML, intentional unsanitized areas for CTF only
+
+## Security Policy
+
+This repo intentionally includes insecure patterns for learning. For unintended issues, see `SECURITY.md` for responsible disclosure. Please do not open public exploit details unrelated to the intended challenges.
+
+## Contributing
+
+Contributions are welcome — new challenges, improvements, fixes. See `CONTRIBUTING.md` and adhere to the Code of Conduct (`CODE_OF_CONDUCT.md`).
+
+## License
+
+MIT — see `LICENSE`.
+
+---
+
+<details>
+<summary><strong>Full Original README (Preserved)</strong> — click to expand</summary>
+
+
 # SecureBank Application
 
 ## Overview
@@ -449,3 +694,5 @@ This application contains intentional security vulnerabilities for educational p
 *Last updated: April 15, 2025*
 
 *Created for educational purposes only for CSCI3540U - Ontario Tech - CTF Final Major Project.*
+
+</details>

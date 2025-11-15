@@ -1,0 +1,70 @@
+name: Bug report
+description: Report a reproducible problem in SecureBank
+labels: [bug]
+title: "bug: <short description>"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out a bug report!
+        Please do not include sensitive data or real secrets.
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-Submission Checklist
+      options:
+        - label: I am not reporting an intended CTF vulnerability
+          required: true
+        - label: I have searched existing issues for duplicates
+          required: true
+        - label: I have read SECURITY.md for disclosure guidelines
+          required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear and concise description of the issue.
+      placeholder: Tell us what you see vs. what you expected.
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Affected page/endpoint
+      description: URL or API path (e.g., /login, /api/transactions)
+      placeholder: /dashboard/transactions
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: List precise steps and inputs to reproduce the issue.
+      placeholder: |
+        1. Go to ...
+        2. Click ...
+        3. Enter ...
+        4. See error
+    validations:
+      required: true
+  - type: dropdown
+    id: env
+    attributes:
+      label: Environment
+      options:
+        - Local (npm run dev)
+        - Docker
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs/output
+      description: Paste any console/server output. Redact secrets.
+      render: shell
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options: [Low, Medium, High, Critical]
+    validations:
+      required: true

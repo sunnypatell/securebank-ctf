@@ -1,0 +1,50 @@
+name: Challenge idea (CTF)
+description: Propose a new intentional vulnerability or challenge
+labels: [challenge, enhancement]
+title: "challenge: <short description>"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before proposing, please review existing challenges in /challenges.
+  - type: input
+    id: title
+    attributes:
+      label: Challenge title
+      placeholder: Privilege escalation via header confusion
+      validations:
+        required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What the player achieves and why it’s interesting.
+  - type: textarea
+    id: vulnerability
+    attributes:
+      label: Intended vulnerability
+      description: e.g., SQLi (Union), stacked queries, IDOR, auth logic, etc.
+      validations:
+        required: true
+  - type: textarea
+    id: hints
+    attributes:
+      label: Hints (optional)
+  - type: textarea
+    id: steps
+    attributes:
+      label: Proposed flow
+      description: Pages, API routes, approximate SQL snippets.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Success criteria
+      description: How the player verifies completion.
+  - type: checkboxes
+    id: assets
+    attributes:
+      label: Assets to provide
+      options:
+        - label: README for challenge folder
+        - label: Writeup (PDF or Markdown)
+        - label: Test payloads

@@ -1,0 +1,51 @@
+name: Feature request
+description: Suggest an enhancement or new capability
+labels: [enhancement]
+title: "feat: <short description>"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for your idea! Please keep requests scoped and actionable.
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: One-sentence description of the feature.
+      placeholder: Add copy-to-clipboard on transaction IDs
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why is this useful? Who benefits?
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Outline the user flow and technical sketch if possible.
+      placeholder: |
+        - UI: Add button on ...
+        - API: New route /api/...
+        - DB: No schema changes
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - label: Frontend (UI/UX)
+        - label: API/backend
+        - label: Database
+        - label: Docs
+  - type: input
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      placeholder: Keep current flow; link to discussion
+  - type: checkboxes
+    id: contrib
+    attributes:
+      label: Would you like to contribute a PR?
+      options:
+        - label: Yes, I can help implement this

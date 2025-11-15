@@ -1,3 +1,49 @@
+# Project Overview — SQL Injections (CTF Design)
+
+This outline captures the original design vision for an intentionally vulnerable banking/e‑commerce style application focused on SQL injection and related access‑control flaws. The live implementation currently uses Next.js App Router + SQLite; some details below (e.g., MongoDB) reflect early brainstorming and are preserved for completeness.
+
+## Functional Scope
+
+Core user flows
+1. Login / Register
+2. Make a transaction (purchase or transfer between users)
+3. View transactions (with potential exploit paths to view all)
+4. Leave feedback and comments
+
+Technology notes
+- Backend Framework: TBD (original); implemented with Next.js App Router
+- Relational DB: SQLite — core functionality
+- NoSQL: MongoDB for feedback/comments (original plan). Note: current app stores feedback in SQLite for simplicity.
+
+## Attack Concepts (Draft to Challenges)
+
+1) Registration attack (role escalation via INSERT)
+- Flow: user supplies crafted password to alter `role` during registration
+- Intended mitigation bypass: blacklist/filters on username; injection only via password
+- Example payload concept: `winner', 'pass', CHAR(97,100,109,105,110)) --`
+
+2) Login attack (UNION‑based or filter bypass)
+- Goal: log in as a target user/admin
+- Flow: public discussion hints; use imperfect sanitization with iterative payload refinement
+
+3) Transaction search
+- Goal: enumerate all users’ transactions via SQLi or logic bug
+
+4) Overwrite all transactions
+- Goal: destructive write via stacked queries or maintenance path
+
+5) Manipulate comments (NoSQL)
+- Goal: forge statements/announcements or pump likes to top content
+- Variants: NoSQL DoS, like manipulation
+
+Mapping to current repo
+- Implemented challenges include registration role escalation, admin login bypass, feedback‑based escalation and credential exfiltration, and viewing all transactions. See `challenges/*` for authored briefs and writeups.
+
+---
+
+<details>
+<summary><strong>Original Draft (Preserved)</strong></summary>
+
 # Project overview - SQL Injections
 
 ## Theme and functionalities
@@ -59,6 +105,8 @@ This one is very similar to a Juice Shop challenge so wouldnt be worth much
 
 ### NoSQL Like manipulation
 Create a post/comment with 100 likes, sending it to the top of the list
+
+</details>
 
 
 

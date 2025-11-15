@@ -1,3 +1,48 @@
+<div align="center">
+  <h1>Contributing to SecureBank</h1>
+  <p><i>Help us build a world‑class, intentionally vulnerable CTF app.</i></p>
+  <img alt="PRs" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"> <img alt="Style" src="https://img.shields.io/badge/TypeScript-required-3178c6?logo=typescript&logoColor=white"> <img alt="Next" src="https://img.shields.io/badge/Next.js-15-black?logo=next.js">
+</div>
+
+---
+
+## Contribution Guidelines (Quick Version)
+
+- Use TypeScript everywhere; keep components small and readable
+- Prefer Tailwind CSS; no heavy UI libs
+- Keep vulnerabilities intentional and scoped to challenges
+- Discuss large changes in an issue before coding
+- Write clear commit messages and focused PRs
+
+### Branch Naming
+- `feat/<area>-<short-desc>` (e.g., `feat/faq-sqli-challenge`)
+- `fix/<area>-<bug>` (e.g., `fix/login-error-message`)
+- `docs/<what>` (e.g., `docs/update-readme-docker`)
+
+### Conventional Commits (recommended)
+- `feat: add SQLi challenge to transaction search`
+- `fix: correct session validation bug in login route`
+- `docs: expand Docker usage section`
+
+### PR Checklist
+- Includes scope, motivation, and testing steps
+- Notes whether a change is an intentional vulnerability
+- Screenshots for UI changes
+- Lint passes locally (`npm run lint`)
+
+### Local Dev Checks
+```bash
+cd frontend
+npm ci
+npm run lint
+npm run dev
+```
+
+### Issue Labels (suggested)
+- `challenge`, `bug`, `docs`, `enhancement`, `security`, `good first issue`
+
+---
+
 # Contributing to SecureBank
 
 Thanks for your interest in contributing to SecureBank! This project is intentionally designed for web security education and CTF-style exploitation, especially focused on SQL injection. All contributions that maintain the educational value and spirit of the project are welcome.

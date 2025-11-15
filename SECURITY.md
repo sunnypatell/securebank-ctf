@@ -42,3 +42,26 @@ SecureBank is a CTF teaching tool modeled after apps like OWASP Juice Shop. It i
 ## 🤝 Thanks
 
 Thanks for helping make the educational side of web security better. All responsible disclosures will be acknowledged (privately or publicly, your choice).
+
+---
+
+## 📅 Response Targets (Best Effort)
+
+- Acknowledge report: within 3 business days
+- Initial assessment: within 7 business days
+- Mitigation plan (if needed): within 14 business days
+
+These timelines are targets for a community‑maintained project and may vary.
+
+## 🛡️ Safe Harbor
+
+We consider research conducted in good faith and within the guidelines above to be authorized. We will not pursue legal action against individuals who:
+- Report vulnerabilities privately and responsibly
+- Do not compromise data beyond what is necessary to demonstrate a vulnerability
+- Avoid privacy violations, data destruction, and service disruption
+
+## 🚫 Out of Scope (Examples)
+
+- Denial of service that materially impacts collaborators
+- Automated vulnerability scanners without actionable details
+- Findings limited to best‑practice recommendations with no concrete impact

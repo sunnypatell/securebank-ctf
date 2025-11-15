@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability (private)
+    url: mailto:sunnypatel124555@gmail.com
+    about: Please report unintended security issues privately. Do not include exploit details in public issues.
+  - name: Help & questions
+    url: https://github.com/sunnypatell/securebank-ctf/issues
+    about: Use issues for actionable bugs/requests. General Q&A can start as an issue and be re-scoped.

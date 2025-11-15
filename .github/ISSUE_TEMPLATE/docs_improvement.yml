@@ -1,0 +1,31 @@
+name: Docs improvement
+description: Improve documentation, guides, or examples
+labels: [documentation]
+title: "docs: <short description>"
+body:
+  - type: input
+    id: area
+    attributes:
+      label: Documentation area
+      placeholder: README.md, CONTRIBUTING.md, frontend/README.md
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current behavior/text
+      description: Paste the relevant snippet or link.
+  - type: textarea
+    id: change
+    attributes:
+      label: Proposed change
+      description: Provide the improved text or outline.
+      validations:
+        required: true
+  - type: checkboxes
+    id: links
+    attributes:
+      label: Cross references
+      options:
+        - label: I checked for duplicated guidance elsewhere
+        - label: I will update all related links if needed
