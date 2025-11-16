@@ -151,6 +151,49 @@ securebank-ctf/
 - SQLite via `better-sqlite3` configured in `frontend/database/db.ts`
 - Auth via signed cookie containing `{ username, role }`
 
+### System Diagram
+
+```mermaid
+%%{init: {
+   "theme": "base",
+   "themeVariables": {
+      "primaryColor": "#3B82F6",
+      "primaryBorderColor": "#2563EB",
+      "primaryTextColor": "#ffffff",
+      "clusterBkg": "#F8FAFC",
+      "clusterBorder": "#94A3B8",
+      "lineColor": "#64748B"
+   }
+}}%%
+flowchart TB
+   Title["SecureBank CTF — Architecture<br/><span style='font-size:12px'>Diagram by Sunny Patel</span>"]
+  subgraph App["SecureBank CTF — Next.js 15 + SQLite"]
+    direction TB
+    Client["Client Pages<br/>/ • /login • /register<br/>/dashboard • /dashboard/transactions (+new)<br/>/dashboard/feedback • /help-faq"]
+    Server["App Router + UI<br/>Route Handlers (app/api/*)<br/>cookies/headers"]
+    API["API Routes<br/>POST login • POST logout • POST register<br/>GET get-session • GET/POST feedback • GET/POST transactions"]
+    DBInit["database/db.ts<br/>schema init + seeding"]
+    SQLite[("SQLite<br/>database.sqlite")]
+
+    Client --> Server --> API --> DBInit --> SQLite
+    DBInit -. symlink/persist .- SQLite
+
+    subgraph Container["Containerization"]
+      Dockerfile["Dockerfile<br/>multi-stage build"]
+      Start["start.sh<br/>seed, symlink, run"]
+      Volume["Volume /app/data<br/>(persist)"]
+    end
+    Dockerfile --> Start --> SQLite
+    Volume --- SQLite
+  end
+
+  classDef vuln fill:#fff3cd,stroke:#f0ad4e,color:#8a6d3b;
+   classDef title fill:#F8FAFC,stroke:#2563EB,color:#0F172A;
+  V1["Vulnerable surfaces<br/>feedback search • transactions search • FAQ search"]:::vuln
+  API --- V1
+   Title
+```
+
 ## API Endpoints
 
 - `POST /api/login` • `POST /api/logout` • `POST /api/register`
