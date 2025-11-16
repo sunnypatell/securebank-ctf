@@ -171,27 +171,111 @@ flowchart TB
     direction TB
     Client["Client Pages<br/>/ • /login • /register<br/>/dashboard • /dashboard/transactions (+new)<br/>/dashboard/feedback • /help-faq"]
     Server["App Router + UI<br/>Route Handlers (app/api/*)<br/>cookies/headers"]
-    API["API Routes<br/>POST login • POST logout • POST register<br/>GET get-session • GET/POST feedback • GET/POST transactions"]
-    DBInit["database/db.ts<br/>schema init + seeding"]
+   API["API Routes<br/>POST login • POST logout • POST register<br/>GET get-session • GET/POST/DELETE feedback • GET/POST transactions"]
+   DBInit["database/db.ts<br/>schema init + admin seeding"]
     SQLite[("SQLite<br/>database.sqlite")]
 
-    Client --> Server --> API --> DBInit --> SQLite
-    DBInit -. symlink/persist .- SQLite
+   Client --> Server --> API --> SQLite
+   DBInit -. init/seed .- SQLite
 
     subgraph Container["Containerization"]
       Dockerfile["Dockerfile<br/>multi-stage build"]
       Start["start.sh<br/>seed, symlink, run"]
       Volume["Volume /app/data<br/>(persist)"]
     end
-    Dockerfile --> Start --> SQLite
-    Volume --- SQLite
+   Dockerfile --> Start --> SQLite
+   Volume --- SQLite
+   Start -. symlink/persist .- SQLite
   end
 
   classDef vuln fill:#fff3cd,stroke:#f0ad4e,color:#8a6d3b;
    classDef title fill:#F8FAFC,stroke:#2563EB,color:#0F172A;
-  V1["Vulnerable surfaces<br/>feedback search • transactions search • FAQ search"]:::vuln
+   V1["Vulnerable surfaces<br/>feedback search • transactions search"]:::vuln
   API --- V1
    Title
+```
+
+### Data Model and Flows
+
+```mermaid
+%%{init: {
+    "theme": "base",
+    "themeVariables": {
+         "primaryColor": "#3B82F6",
+         "primaryBorderColor": "#2563EB",
+         "primaryTextColor": "#ffffff",
+         "clusterBkg": "#F8FAFC",
+         "clusterBorder": "#94A3B8",
+         "lineColor": "#64748B"
+    }
+}}%%
+erDiagram
+   USERS {
+      int id PK
+      string username
+      string password
+      string role
+   }
+   TRANSACTIONS {
+      int id PK
+      int user_id FK
+      datetime date
+      string description
+      int amount
+      string type
+   }
+   FEEDBACK {
+      int id PK
+      string user
+      string message
+      datetime date
+      boolean read
+   }
+
+   USERS ||--o{ TRANSACTIONS : makes
+   USERS ||--o{ FEEDBACK : "submits (by username)"
+```
+
+<sub><i>Diagram by Sunny Patel</i></sub>
+
+```mermaid
+%%{init: {
+    "theme": "base",
+    "themeVariables": {
+         "primaryColor": "#3B82F6",
+         "primaryBorderColor": "#2563EB",
+         "primaryTextColor": "#ffffff",
+         "clusterBkg": "#F8FAFC",
+         "clusterBorder": "#94A3B8",
+         "lineColor": "#64748B"
+    }
+}}%%
+sequenceDiagram
+   title SecureBank — Login Sequence
+   autonumber
+   participant U as User (Browser)
+   participant A as Next.js API (/api/login)
+   participant C as Cookie-Signature
+   participant DB as SQLite (database.sqlite)
+
+   U->>A: POST /api/login (username, password)
+   A->>A: Double-decode inputs
+   A->>DB: SELECT * FROM Users WHERE username AND password
+   alt Credentials match
+      A->>C: Sign session JSON with COOKIE_SECRET
+      C-->>A: Signed value
+      A-->>U: 200 OK + Set-Cookie session, userId
+   else Invalid
+      A-->>U: 401 Unauthorized
+   end
+
+   Note over U,A: Subsequent requests attach signed session cookie
+   U->>A: GET /api/get-session
+   A->>C: Unsign session with COOKIE_SECRET
+   C-->>A: Plain session JSON
+   A-->>U: 200 { username, role }
+
+   Note over U,DB: Diagram by Sunny Patel
 ```
 
 ## API Endpoints
