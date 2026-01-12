@@ -14,9 +14,13 @@ db.exec(`
 
   CREATE TABLE IF NOT EXISTS Transactions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    sender VARCHAR(1000), 
-    recipient VARCHAR(1000),  
-    amount INTEGER
+    user_id INTEGER,
+    date TEXT,
+    description VARCHAR(1000),
+    amount REAL,
+    type VARCHAR(100),
+    sender VARCHAR(1000),
+    recipient VARCHAR(1000)
   );
 
   CREATE TABLE IF NOT EXISTS feedback (
