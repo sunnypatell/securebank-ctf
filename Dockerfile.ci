@@ -1,29 +1,18 @@
-# CI Dockerfile - packages pre-built Next.js app
+# CI Dockerfile - packages pre-built Next.js standalone app
 # Used by GitHub Actions where build happens on runner (not in Docker)
 
 FROM node:20-slim
 
 WORKDIR /app
 
-# Install runtime dependencies only
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        build-essential \
-        python3 \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy package files and install production deps
-COPY frontend/package*.json ./
-RUN npm ci --omit=dev
-
-# Copy pre-built app from CI runner
-COPY frontend/.next ./.next
+# Copy standalone output (self-contained, minimal dependencies)
+COPY frontend/.next/standalone ./
+COPY frontend/.next/static ./.next/static
 COPY frontend/public ./public
-COPY frontend/app ./app
-COPY frontend/lib ./lib
+
+# Copy database files
 COPY frontend/database ./database
 COPY frontend/database.sqlite ./database.sqlite
-COPY frontend/next.config.ts ./next.config.ts
 COPY frontend/.env.local ./.env.local
 
 # Setup seed database for persistence
@@ -37,10 +26,11 @@ RUN chmod +x /usr/local/bin/start.sh \
 
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
+ENV PORT=3000
 ENV DATA_DIR=/app/data
 
 VOLUME ["/app/data"]
 EXPOSE 3000
 USER node
 
-CMD ["start.sh"]
+CMD ["node", "server.js"]
