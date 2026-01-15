@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "better-sqlite3": "^11.9.1",
+    "better-sqlite3": "^12.6.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cookie-signature": "^1.2.2",
