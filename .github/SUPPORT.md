@@ -1,15 +1,27 @@
 # Support
 
-Thanks for your interest in SecureBank!
+Thanks for your interest in SecureBank CTF!
 
-- Bugs or feature requests: open an issue using the appropriate template.
-- Documentation improvements: use the "Docs improvement" issue template.
-- Security reports: please email sunnypatel124555@gmail.com (see SECURITY.md). Do not disclose details publicly.
-- Setup help: include OS, Node/Docker version, exact commands, and logs.
+## Getting Help
 
-Quick start references
-- Root README (Quick Start, Docker)
-- frontend/README (scripts and layout)
-- CONTRIBUTING (dev workflow and PR checklist)
+| Need | Where to go |
+|------|-------------|
+| Bug reports | [Open an issue](../../issues/new?template=bug_report.yml) |
+| Feature requests | [Open an issue](../../issues/new?template=feature_request.yml) |
+| New challenge ideas | [Open an issue](../../issues/new?template=challenge_idea.yml) |
+| Docs improvements | [Open an issue](../../issues/new?template=docs_improvement.yml) |
+| Security reports | Email sunnypatel124555@gmail.com (see [SECURITY.md](../SECURITY.md)) |
 
-We’re a community‑maintained project. Response times may vary; thanks for your patience!
+## Quick Links
+
+- [README](../README.md) - Quick start, Docker usage, architecture
+- [CONTRIBUTING](../CONTRIBUTING.md) - Dev workflow and PR checklist
+- [Challenges](../challenges/) - CTF challenge documentation
+
+## Before Opening an Issue
+
+- Search [existing issues](../../issues) for duplicates
+- Include OS, Node/Docker version, exact commands, and logs
+- For CTF challenges, check the `/challenges` folder first
+
+This is a community project - response times may vary. Thanks for your patience!

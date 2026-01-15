@@ -20,8 +20,8 @@ body:
     attributes:
       label: Proposed change
       description: Provide the improved text or outline.
-      validations:
-        required: true
+    validations:
+      required: true
   - type: checkboxes
     id: links
     attributes:

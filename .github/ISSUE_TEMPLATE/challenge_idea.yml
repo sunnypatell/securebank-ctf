@@ -12,8 +12,8 @@ body:
     attributes:
       label: Challenge title
       placeholder: Privilege escalation via header confusion
-      validations:
-        required: true
+    validations:
+      required: true
   - type: textarea
     id: summary
     attributes:
