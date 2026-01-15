@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+coverage/
+
+# Package manager locks
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Database
+*.sqlite
+*.db
+
+# Cache
+.turbo/
+.eslintcache
+*.tsbuildinfo
+
+# Environment
+.env
+.env.*
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated
+*.min.js
+*.min.css

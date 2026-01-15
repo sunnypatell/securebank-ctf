@@ -1,0 +1,30 @@
+# CODEOWNERS - Define code ownership for automatic review requests
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything in the repo
+* @sunnypatell
+
+# Frontend application
+/frontend/ @sunnypatell
+
+# API routes
+/frontend/app/api/ @sunnypatell
+
+# Database schema and configuration
+/frontend/database/ @sunnypatell
+
+# Docker configuration
+/Dockerfile @sunnypatell
+/start.sh @sunnypatell
+/.dockerignore @sunnypatell
+
+# CI/CD workflows
+/.github/workflows/ @sunnypatell
+
+# Documentation
+/README.md @sunnypatell
+/CONTRIBUTING.md @sunnypatell
+/SECURITY.md @sunnypatell
+
+# CTF challenges documentation
+/challenges/ @sunnypatell

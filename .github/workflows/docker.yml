@@ -1,0 +1,54 @@
+# Docker build verification workflow
+# Ensures the Docker image builds successfully
+
+name: Docker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Dockerfile"
+      - "start.sh"
+      - ".dockerignore"
+      - "frontend/**"
+      - ".github/workflows/docker.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "Dockerfile"
+      - "start.sh"
+      - ".dockerignore"
+      - "frontend/**"
+      - ".github/workflows/docker.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: securebank-ctf:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Test container starts
+        run: |
+          docker run -d --name test-container -p 3000:3000 securebank-ctf:test
+          sleep 10
+          curl -f http://localhost:3000 || exit 1
+          docker stop test-container

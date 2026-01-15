@@ -1,0 +1,46 @@
+{
+  "name": "securebank-ctf",
+  "version": "1.0.0",
+  "description": "Intentionally vulnerable banking application for hands-on web security training (SQL injection, access control)",
+  "private": true,
+  "keywords": [
+    "ctf",
+    "capture-the-flag",
+    "security",
+    "cybersecurity",
+    "sql-injection",
+    "web-security",
+    "owasp",
+    "banking",
+    "vulnerable-application",
+    "security-training",
+    "nextjs",
+    "react",
+    "typescript"
+  ],
+  "homepage": "https://github.com/sunnypatell/securebank-ctf#readme",
+  "bugs": {
+    "url": "https://github.com/sunnypatell/securebank-ctf/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sunnypatell/securebank-ctf.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Sunny Patel",
+    "url": "https://github.com/sunnypatell"
+  },
+  "scripts": {
+    "dev": "npm run dev --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "start": "npm run start --prefix frontend",
+    "lint": "npm run lint --prefix frontend",
+    "docker:build": "docker build -t securebank-ctf .",
+    "docker:run": "docker run --rm -p 3000:3000 -v securebank-data:/app/data securebank-ctf"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}
