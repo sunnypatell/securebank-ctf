@@ -1,20 +1,15 @@
 # Docker build verification workflow
-# Verifies the Docker image builds successfully on main branch changes
+# Manual trigger only - run when you want to verify Docker builds
 
 name: Docker
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "Dockerfile"
-      - "start.sh"
-      - ".dockerignore"
-      - "frontend/**"
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Reason for running this workflow"
+        required: false
+        default: "Manual verification"
 
 jobs:
   build:
