@@ -139,3 +139,27 @@ Thumbs.db
 
 # Claude Code
 .claude/
+
+# SQLite databases (generated at runtime)
+*.sqlite
+*.sqlite3
+*.db
+
+# Turbo
+.turbo
+
+# Vercel
+.vercel
+
+# Test artifacts
+__snapshots__
+*.snap
+
+# Debug
+.debug/
+debug.log
+
+# Local notes (keep your personal notes out of repo)
+TODO.local.md
+notes.local.md
+scratch/
