@@ -418,7 +418,7 @@ export default function HelpFAQ() {
                       />
                     </svg>
                     <p className="text-gray-400 text-lg mb-2">No results found</p>
-                    <p className="text-gray-500 mb-4">We couldn't find any FAQs matching "{searchQuery}"</p>
+                    <p className="text-gray-500 mb-4">We couldn&apos;t find any FAQs matching &quot;{searchQuery}&quot;</p>
                     <button
                       onClick={() => setSearchQuery("")}
                       className="text-blue-400 hover:text-blue-300 transition-colors"
@@ -518,7 +518,7 @@ export default function HelpFAQ() {
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
-                      <span>Always log out when you're finished using SecureBank</span>
+                      <span>Always log out when you&apos;re finished using SecureBank</span>
                     </li>
                     <li className="flex items-start">
                       <svg

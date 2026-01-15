@@ -52,7 +52,7 @@ export default function AddTransactionPage() {
         const errorData = await res.json().catch(() => ({ message: "Failed to add transaction." }))
         setMessage({ type: "error", text: errorData.message || "Failed to add transaction." })
       }
-    } catch (error) {
+    } catch {
       setMessage({ type: "error", text: "An error occurred while adding the transaction." })
     } finally {
       setIsSubmitting(false)

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 
 export default function Home() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [vantaEffect, setVantaEffect] = useState<any>(null)
   const vantaRef = useRef<HTMLDivElement>(null)
   const [vantaLoaded, setVantaLoaded] = useState(false)
@@ -42,7 +43,7 @@ export default function Home() {
 
     // Initialize Vanta effect
     if (!vantaEffect) {
-      // @ts-ignore - Vanta is loaded via CDN
+      // @ts-expect-error - Vanta is loaded via CDN
       const effect = window.VANTA.GLOBE({
         el: vantaRef.current,
         mouseControls: true,

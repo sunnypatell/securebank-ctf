@@ -68,8 +68,6 @@ export default function Transactions() {
 
   // Helper function to filter transactions based on selected date range
 const filterByDateRange = (transactions: Transaction[]): Transaction[] => {
-  const now = new Date(); // current date
-
   switch (dateFilter) {
     case "7days":
       // Keep only transactions from the last 7 days
@@ -507,7 +505,7 @@ const netBalance = totalIncome - totalExpenses;
           Notice something unfamiliar?
         </p>
         <p className="mt-1 text-gray-400">
-          If you see a charge that doesn't look right, please{" "}
+          If you see a charge that doesn&apos;t look right, please{" "}
           <Link href="/help-faq" className="text-blue-400 hover:text-blue-300 underline transition-colors">
             dispute it with us
           </Link>

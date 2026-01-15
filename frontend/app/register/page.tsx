@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react"
 import type React from "react"
-
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 export default function Register() {
@@ -205,13 +205,13 @@ export default function Register() {
         <div className="mt-6 text-center">
           <p className="text-gray-400">
             Already have an account?{" "}
-            <a href="/login" className="text-blue-400 hover:text-blue-300">
+            <Link href="/login" className="text-blue-400 hover:text-blue-300">
               Login
-            </a>
+            </Link>
           </p>
-          <a href="/" className="text-blue-400 hover:text-blue-300 text-sm block mt-4">
+          <Link href="/" className="text-blue-400 hover:text-blue-300 text-sm block mt-4">
             Back to Home
-          </a>
+          </Link>
         </div>
       </div>
     </main>

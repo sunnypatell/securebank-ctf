@@ -21,7 +21,8 @@ interface Feedback {
 
 export default function Dashboard() {
   const [currentTime, setCurrentTime] = useState(new Date())
-  const [activeTab, setActiveTab] = useState("overview")
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_activeTab, _setActiveTab] = useState("overview")
   const [isLoading, setIsLoading] = useState(true)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([])
@@ -137,6 +138,7 @@ export default function Dashboard() {
     const countRef = useRef(null)
 
     useEffect(() => {
+      const currentRef = countRef.current
       const observer = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting) {
@@ -147,15 +149,16 @@ export default function Dashboard() {
         { threshold: 0.1 },
       )
 
-      if (countRef.current) {
-        observer.observe(countRef.current)
+      if (currentRef) {
+        observer.observe(currentRef)
       }
 
       return () => {
-        if (countRef.current) {
+        if (currentRef) {
           observer.disconnect()
         }
       }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const animateCount = () => {
@@ -497,11 +500,11 @@ export default function Dashboard() {
                     <div className="text-xs text-gray-400 mb-2">Latest feedback:</div>
                     {latestFeedback ? (
                       <p className="text-sm text-gray-300 italic">
-                        "
+                        &quot;
                         {latestFeedback.message.length > 70
                           ? latestFeedback.message.substring(0, 70) + "..."
                           : latestFeedback.message}
-                        "
+                        &quot;
                       </p>
                     ) : (
                       <p className="text-sm text-gray-500 italic">No feedback available yet</p>
@@ -687,7 +690,7 @@ export default function Dashboard() {
                     </p>
                     <div className="mt-4 pt-4 border-t border-gray-600">
                       <p className="text-gray-400 text-sm italic">
-                        "Security isn't just a feature - it's the foundation of everything we do."
+                        &quot;Security isn&apos;t just a feature - it&apos;s the foundation of everything we do.&quot;
                       </p>
                     </div>
                   </div>

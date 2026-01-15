@@ -612,7 +612,7 @@ export default function Feedback() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div className="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
-                <h4 className="font-medium text-yellow-400 mb-2">Do's</h4>
+                <h4 className="font-medium text-yellow-400 mb-2">Do&apos;s</h4>
                 <ul className="space-y-2 text-gray-300">
                   <li className="flex items-start">
                     <svg
@@ -650,7 +650,7 @@ export default function Feedback() {
                 </ul>
               </div>
               <div className="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
-                <h4 className="font-medium text-yellow-400 mb-2">Don'ts</h4>
+                <h4 className="font-medium text-yellow-400 mb-2">Don&apos;ts</h4>
                 <ul className="space-y-2 text-gray-300">
                   <li className="flex items-start">
                     <svg

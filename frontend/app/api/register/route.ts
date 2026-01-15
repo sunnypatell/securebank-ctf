@@ -12,7 +12,7 @@ export async function POST(req: Request) {
         const query = `INSERT INTO Users (username, password, role) VALUES ('${username}', '${password}', 'user')`;
         db.prepare(query).run();
         return NextResponse.json({ success: true, message: "User registered!" });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: "Error registering user" }, { status: 500 });
     }
 }

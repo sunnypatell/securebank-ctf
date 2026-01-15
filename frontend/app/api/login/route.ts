@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import db from '../../../database/db';
 import { cookies } from "next/headers";
 
-// @ts-ignore
+// @ts-expect-error - no types available for cookie-signature
 import * as cookieSignature from 'cookie-signature';
 
 
@@ -11,7 +11,7 @@ export async function GET() {
     try {
         const users = db.prepare('SELECT * FROM Users').all();
         return NextResponse.json(users);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: "Failed to retrieve users" }, { status: 500 });
     }
 }
@@ -106,7 +106,8 @@ export async function POST(req: Request) {
             console.log("Invalid user/pass", query);
             return NextResponse.json({ error: "SQLite: Invalid username or password", user }, { status: 401 });
         }
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Unknown error";
+        return NextResponse.json({ error: message }, { status: 500 });
     }
 }

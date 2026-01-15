@@ -35,7 +35,6 @@ export async function GET(req: NextRequest) {
     console.log("endDate:", endDate)
     console.log("devMode:", devMode)
     let query: string;
-    let results;
 
     // devMode skips user-level filtering
     if (search.trim()) {
@@ -69,7 +68,7 @@ export async function GET(req: NextRequest) {
     }
 
     console.log("Executing query:", query);
-    results = await db.all(query);
+    const results = await db.all(query);
 
     // Add hint message only when suspicious input is used
     if (hasSuspiciousChars && !devMode) {

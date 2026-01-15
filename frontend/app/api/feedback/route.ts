@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import db from "../../../database/db";  
 import { cookies } from "next/headers";
-// @ts-ignore
+// @ts-expect-error - no types available for cookie-signature
 import * as cookieSignature from "cookie-signature";
 
 // Submit Feedback

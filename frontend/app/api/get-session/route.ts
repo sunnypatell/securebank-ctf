@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-// @ts-ignore
+// @ts-expect-error - no types available for cookie-signature
 import * as cookieSignature from 'cookie-signature';
 
 export async function GET() {
