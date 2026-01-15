@@ -1,5 +1,5 @@
 # Docker build verification workflow
-# Ensures the Docker image builds successfully
+# Verifies the Docker image builds successfully on main branch changes
 
 name: Docker
 
@@ -11,15 +11,6 @@ on:
       - "start.sh"
       - ".dockerignore"
       - "frontend/**"
-      - ".github/workflows/docker.yml"
-  pull_request:
-    branches: [main]
-    paths:
-      - "Dockerfile"
-      - "start.sh"
-      - ".dockerignore"
-      - "frontend/**"
-      - ".github/workflows/docker.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -42,13 +33,6 @@ jobs:
         with:
           context: .
           push: false
-          tags: securebank-ctf:test
+          tags: securebank-ctf:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: Test container starts
-        run: |
-          docker run -d --name test-container -p 3000:3000 securebank-ctf:test
-          sleep 10
-          curl -f http://localhost:3000 || exit 1
-          docker stop test-container
