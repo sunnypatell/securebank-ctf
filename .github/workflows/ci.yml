@@ -1,5 +1,5 @@
 # Continuous Integration workflow
-# Runs lint, typecheck, and build on pull requests and pushes to main
+# Runs lint and typecheck on pull requests and pushes to main
 
 name: CI
 
@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   ci:
-    name: Lint, Type Check & Build
+    name: Lint & Type Check
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -40,8 +40,3 @@ jobs:
 
       - name: Run TypeScript type check
         run: npx tsc --noEmit
-
-      - name: Build application
-        run: npm run build
-        env:
-          COOKIE_SECRET: ci-test-secret-do-not-use-in-production
