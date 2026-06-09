@@ -123,7 +123,7 @@ Or with Docker Compose (`docker-compose.yml` is included in the repo root):
 docker compose up
 ```
 
-Apple Silicon: the image is amd64 and runs on arm64 hosts via Docker's runtime emulation. Building from source on arm64 is a known issue tracked in `CHANGELOG.md`.
+Apple Silicon: the image is amd64 and runs on arm64 hosts via Docker's runtime emulation; a native multi-arch image is planned.
 
 ### Verify the Release (Supply Chain)
 

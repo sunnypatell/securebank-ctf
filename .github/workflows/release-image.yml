@@ -7,9 +7,8 @@
 # dry_run stops before any publish: build + boot smoke test + sbom + scan only,
 # nothing is pushed, attested, or released.
 #
-# the image is amd64-only by design: the v1 next.js build hits a known arm64 swc
-# crash at build time (crbug.com/1201626). amd64 hosts run it directly; apple
-# silicon hosts run the published amd64 image fine under docker's emulation.
+# the image is published for linux/amd64; apple silicon hosts run it under
+# docker's runtime emulation. a native multi-arch image is a planned fast-follow.
 name: release-image
 
 on:
@@ -224,7 +223,7 @@ jobs:
             image digest: `${{ steps.build.outputs.digest }}`
 
             ### apple silicon
-            the published image is amd64; it runs on arm64 hosts via docker's runtime emulation. building from source on arm64 is a known issue (see CHANGELOG).
+            the published image is amd64 and runs on arm64 hosts via docker's runtime emulation. a native multi-arch image is planned.
 
       - name: Job summary
         if: ${{ always() }}

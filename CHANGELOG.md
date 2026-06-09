@@ -13,7 +13,7 @@ vulnerable application behavior is unchanged.
 ### added
 
 - published container image at `ghcr.io/sunnypatell/securebank-ctf`, built and
-  released from ci for `linux/amd64`.
+  released from ci for `linux/amd64` (multi-arch is a planned fast-follow).
 - slsa v1.0 build level 3 release pipeline: the build runs inside a reusable
   workflow (signing-identity isolation), and every image carries a
   sigstore-signed build-provenance attestation bound to its digest, verifiable
@@ -34,11 +34,12 @@ vulnerable application behavior is unchanged.
 - replaced the disabled docker ci workflow (which only printed a build notice
   and exited non-zero) with the real `docker-build` verification above.
 
-### known issues
+### fixed
 
-- building the next.js app on arm64 (apple silicon, arm64 docker) crashes at
-  build time with a v8 fatal error (crbug.com/1201626). the released image is
-  therefore amd64-only; arm64 hosts can still run it under docker's runtime
-  emulation. a multi-arch image is tracked for a future release.
+- removed a self-referential `frontend` dependency (`"frontend": "file:"`) in
+  `frontend/package.json`. it symlinked `node_modules/frontend` to the package
+  root, and the resulting infinite symlink loop crashed `next build` with a v8
+  fatal ("invalid size error", crbug.com/1201626) on every platform, which is
+  why container builds had been disabled. the production build works again.
 
 [1.0.0]: https://github.com/sunnypatell/securebank-ctf/releases/tag/v1.0.0
