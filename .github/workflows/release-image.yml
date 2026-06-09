@@ -1,0 +1,249 @@
+# reusable release engine (slsa v1.0 build level 3 via reusable-workflow isolation)
+#
+# builds the container for linux/amd64, pushes it to ghcr, signs sigstore-backed
+# build-provenance + sbom attestations bound to the image digest, scans the sbom
+# for known cves, and publishes a github release with verifiable assets.
+#
+# dry_run stops before any publish: build + boot smoke test + sbom + scan only,
+# nothing is pushed, attested, or released.
+#
+# the image is published for linux/amd64; apple silicon hosts run it under
+# docker's runtime emulation. a native multi-arch image is a planned fast-follow.
+name: release-image
+
+on:
+  workflow_call:
+    inputs:
+      ref_name:
+        description: "tag (vX.Y.Z) for a real release, or a commit sha for a dry run"
+        required: true
+        type: string
+      dry_run:
+        required: true
+        type: boolean
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+      attestations: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+      - name: Derive version
+        id: ver
+        env:
+          REF: ${{ inputs.ref_name }}
+        run: |
+          set -euo pipefail
+          # strict semver tag => real release; anything else => dry-run version.
+          if [[ "$REF" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "tag=$REF"              >> "$GITHUB_OUTPUT"
+            echo "version=${REF#v}"      >> "$GITHUB_OUTPUT"
+            echo "is_release=true"       >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=dev"               >> "$GITHUB_OUTPUT"
+            echo "version=0.0.0-dev"     >> "$GITHUB_OUTPUT"
+            echo "is_release=false"      >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
+
+      - name: Log in to GHCR
+        if: ${{ !inputs.dry_run }}
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Image metadata
+        id: meta
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}},value=${{ steps.ver.outputs.tag }},enable=${{ steps.ver.outputs.is_release }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ steps.ver.outputs.tag }},enable=${{ steps.ver.outputs.is_release }}
+            type=raw,value=latest,enable=${{ steps.ver.outputs.is_release }}
+
+      # dry run: build for amd64 and load locally so we can smoke test, no push.
+      - name: Build (dry-run, load)
+        if: ${{ inputs.dry_run }}
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          push: false
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dryrun
+          provenance: false
+
+      # real: build + push for amd64 and capture the digest the attestations bind to.
+      - name: Build and push
+        if: ${{ !inputs.dry_run }}
+        id: build
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # disable buildkit's own unsigned provenance manifest; the only
+          # provenance we ship is the sigstore-signed one from attest below.
+          provenance: false
+
+      - name: Smoke test (boot + http 200)
+        env:
+          DRY: ${{ inputs.dry_run }}
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          set -euo pipefail
+          if [ "$DRY" = "true" ]; then
+            IMG="${REGISTRY}/${IMAGE_NAME}:dryrun"
+          else
+            IMG="${REGISTRY}/${IMAGE_NAME}@${DIGEST}"
+            docker pull "$IMG"
+          fi
+          docker run -d --rm -p 3000:3000 --name sb "$IMG"
+          ok=""
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/ || true)
+            if [ "$code" = "200" ]; then ok=1; echo "booted in ~$((i*2))s (HTTP 200)"; break; fi
+            sleep 2
+          done
+          echo "--- container logs ---"
+          docker logs sb 2>&1 | head -20 || true
+          docker stop sb >/dev/null 2>&1 || true
+          [ -n "$ok" ] || { echo "::error::image did not serve HTTP 200"; exit 1; }
+
+      - name: Generate SBOM (CycloneDX)
+        if: ${{ !inputs.dry_run }}
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
+        with:
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}
+          format: cyclonedx-json
+          output-file: sbom.cyclonedx.json
+          upload-artifact: false
+          upload-release-assets: false
+
+      # surface known cves in the dependency set. left non-blocking on purpose:
+      # this is a self-hosted training tool, not internet-facing, so a cve in a
+      # transitive dep should inform but not block a release.
+      - name: Scan SBOM for known CVEs (OSV)
+        if: ${{ !inputs.dry_run }}
+        continue-on-error: true
+        uses: google/osv-scanner-action/osv-scanner-action@9a498708959aeaef5ef730655706c5a1df1edbc2 # v2.3.8
+        with:
+          scan-args: |-
+            scan
+            source
+            --sbom=sbom.cyclonedx.json
+
+      - name: Attest build provenance (SLSA, sigstore-signed)
+        if: ${{ !inputs.dry_run }}
+        uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4.1.0
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true
+
+      - name: Attest SBOM
+        if: ${{ !inputs.dry_run }}
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          sbom-path: sbom.cyclonedx.json
+          push-to-registry: true
+
+      - name: Build release assets (source tarball + checksums)
+        if: ${{ !inputs.dry_run }}
+        env:
+          TAG: ${{ steps.ver.outputs.tag }}
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          set -euo pipefail
+          git archive --format=tar.gz --prefix="securebank-ctf-${TAG}/" \
+            -o "securebank-ctf-${TAG}-source.tar.gz" HEAD
+          {
+            echo "image:  ${REGISTRY}/${IMAGE_NAME}:${TAG#v}"
+            echo "digest: ${DIGEST}"
+          } > image-digest.txt
+          sha256sum \
+            sbom.cyclonedx.json \
+            "securebank-ctf-${TAG}-source.tar.gz" \
+            image-digest.txt \
+            > checksums.txt
+          echo "--- checksums.txt ---"
+          cat checksums.txt
+
+      - name: Publish GitHub Release
+        if: ${{ !inputs.dry_run }}
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3.0.0
+        with:
+          tag_name: ${{ steps.ver.outputs.tag }}
+          name: ${{ steps.ver.outputs.tag }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: |
+            sbom.cyclonedx.json
+            securebank-ctf-${{ steps.ver.outputs.tag }}-source.tar.gz
+            image-digest.txt
+            checksums.txt
+          body: |
+            intentionally vulnerable banking app for hands-on web security training. self-host for labs and ctf events only; never expose it to the public internet.
+
+            ### pull the image (linux/amd64)
+            ```bash
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.ver.outputs.version }}
+            docker run --rm -p 3000:3000 -v securebank-data:/app/data \
+              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.ver.outputs.version }}
+            # http://localhost:3000  (demo creds: admin / admin123)
+            ```
+
+            ### verify supply-chain provenance
+            every image is signed with sigstore and carries slsa build provenance + an sbom attestation, both bound to the digest below.
+            ```bash
+            gh attestation verify \
+              oci://${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }} \
+              --repo ${{ github.repository }}
+            ```
+            image digest: `${{ steps.build.outputs.digest }}`
+
+            ### apple silicon
+            the published image is amd64 and runs on arm64 hosts via docker's runtime emulation. a native multi-arch image is planned.
+
+      - name: Job summary
+        if: ${{ always() }}
+        env:
+          DRY: ${{ inputs.dry_run }}
+          TAG: ${{ steps.ver.outputs.tag }}
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          {
+            echo "## release-image: ${TAG}"
+            if [ "$DRY" = "true" ]; then
+              echo "**dry run** - built + smoke-tested amd64 image, no publish."
+            else
+              echo "published \`${REGISTRY}/${IMAGE_NAME}:${TAG#v}\`"
+              echo ""
+              echo "digest: \`${DIGEST}\`"
+              echo ""
+              echo "verify:"
+              echo '```bash'
+              echo "gh attestation verify oci://${REGISTRY}/${IMAGE_NAME}@${DIGEST} --repo ${GITHUB_REPOSITORY}"
+              echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

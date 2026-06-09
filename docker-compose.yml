@@ -1,0 +1,24 @@
+# one-command self-host for a training lab, using the published attested image.
+# never expose this to the public internet - it is intentionally vulnerable.
+#
+#   docker compose up
+#   # http://localhost:3000   (demo creds: admin / admin123)
+#
+# verify supply-chain provenance before running:
+#   gh attestation verify oci://ghcr.io/sunnypatell/securebank-ctf:1.0.0 \
+#     --repo sunnypatell/securebank-ctf
+services:
+  securebank:
+    image: ghcr.io/sunnypatell/securebank-ctf:1.0.0
+    container_name: securebank
+    ports:
+      - "3000:3000"
+    environment:
+      # override for any non-local use with a strong random value.
+      COOKIE_SECRET: ${COOKIE_SECRET:-change-me-before-any-shared-use}
+    volumes:
+      - securebank-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  securebank-data:

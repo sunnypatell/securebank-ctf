@@ -1,0 +1,45 @@
+# release pipeline (caller)
+#
+# thin entrypoint that delegates the build + publish + attestation to a
+# reusable workflow. running the build inside a reusable workflow is what
+# isolates the build's signing identity from this caller, which is github's
+# documented requirement for slsa v1.0 build level 3.
+#
+# real release:  git tag v1.2.3 && git push origin v1.2.3   (tag push -> publish)
+# dry run:       run this workflow manually with dry_run=true (build + scan only)
+#
+# refs:
+#   https://docs.github.com/actions/security-guides/using-artifact-attestations-and-reusable-workflows-to-achieve-slsa-v1-build-level-3
+#   https://slsa.dev/spec/v1.0/levels
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "build + smoke + sbom + scan only; do not push image, attest, or publish a release"
+        type: boolean
+        default: true
+
+# serialize per ref so a re-dispatch on the same tag does not race, while
+# different tags can publish independently.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    permissions:
+      contents: write # create the github release, read source for the tarball
+      packages: write # push the image + attestation referrers to ghcr
+      id-token: write # request the oidc token for sigstore signing
+      attestations: write # write provenance + sbom attestations
+    uses: ./.github/workflows/release-image.yml
+    with:
+      # tag push carries the version in ref_name; manual runs have no tag, so
+      # pass the commit and let the engine force dry-run packaging semantics.
+      ref_name: ${{ github.ref_type == 'tag' && github.ref_name || github.sha }}
+      dry_run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+    secrets: inherit

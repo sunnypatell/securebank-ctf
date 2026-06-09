@@ -1,0 +1,64 @@
+# build verification
+#
+# proves the container image builds for linux/amd64 and boots, on every pr that
+# touches the build and on main. replaces the previously disabled docker
+# workflow: the crash that prompted disabling it is an arm64-only next.js/swc
+# build bug (crbug.com/1201626) and does not occur on the amd64 runners here.
+name: docker-build
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "Dockerfile"
+      - "start.sh"
+      - ".dockerignore"
+      - "frontend/**"
+      - ".github/workflows/docker-build.yml"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: docker-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
+
+      - name: Build image (linux/amd64)
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          push: false
+          tags: securebank-ctf:ci
+          provenance: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Smoke test (boot + http 200)
+        run: |
+          set -euo pipefail
+          docker run -d --rm -p 3000:3000 --name sb securebank-ctf:ci
+          ok=""
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/ || true)
+            if [ "$code" = "200" ]; then ok=1; echo "booted in ~$((i*2))s (HTTP 200)"; break; fi
+            sleep 2
+          done
+          echo "--- container logs ---"
+          docker logs sb 2>&1 | head -20 || true
+          docker stop sb >/dev/null 2>&1 || true
+          [ -n "$ok" ] || { echo "::error::container did not serve HTTP 200"; exit 1; }
