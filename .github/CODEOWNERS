@@ -5,26 +5,26 @@
 * @sunnypatell
 
 # Frontend application
-/frontend/ @sunnypatell
+/frontend/ @sunnypatell @DaniyalLilani @rijabaig @MagneticZebra @ajaya-coder
 
 # API routes
-/frontend/app/api/ @sunnypatell
+/frontend/app/api/ @sunnypatell @DaniyalLilani @rijabaig @MagneticZebra @ajaya-coder
 
 # Database schema and configuration
-/frontend/database/ @sunnypatell
+/frontend/database/ @sunnypatell @DaniyalLilani @rijabaig @MagneticZebra @ajaya-coder
 
 # Docker configuration
-/Dockerfile @sunnypatell
-/start.sh @sunnypatell
-/.dockerignore @sunnypatell
+/Dockerfile @sunnypatell @DaniyalLilani @rijabaig @MagneticZebra @ajaya-coder
+/start.sh @sunnypatell @DaniyalLilani @rijabaig @MagneticZebra @ajaya-coder
+/.dockerignore @sunnypatell @DaniyalLilani @rijabaig @MagneticZebra @ajaya-coder
 
 # CI/CD workflows
-/.github/workflows/ @sunnypatell
+/.github/workflows/ @sunnypatell @DaniyalLilani @rijabaig @MagneticZebra @ajaya-coder
 
 # Documentation
-/README.md @sunnypatell
-/CONTRIBUTING.md @sunnypatell
-/SECURITY.md @sunnypatell
+/README.md @sunnypatell @DaniyalLilani @rijabaig @MagneticZebra @ajaya-coder
+/CONTRIBUTING.md @sunnypatell @DaniyalLilani @rijabaig @MagneticZebra @ajaya-coder
+/SECURITY.md @sunnypatell @DaniyalLilani @rijabaig @MagneticZebra @ajaya-coder
 
 # CTF challenges documentation
-/challenges/ @sunnypatell
+/challenges/ @sunnypatell @DaniyalLilani @rijabaig @MagneticZebra @ajaya-coder
