@@ -1,0 +1,28 @@
+# dependency review (pr supply-chain gate)
+#
+# diffs the dependency graph on every pr and flags newly introduced deps with
+# known high+ severity vulnerabilities before they land. requires the repo's
+# dependency graph (on by default for public repos).
+# ref: https://github.com/actions/dependency-review-action
+name: dependency-review
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write # post the summary comment on failure
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+      - name: Dependency review
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: high
+          comment-summary-in-pr: on-failure

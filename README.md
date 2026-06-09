@@ -21,6 +21,7 @@
 - Overview
 - Quick Start
 - Docker Usage
+- Self-Host (Published Image)
 - Project Structure
 - Features
 - Tech Stack
@@ -104,6 +105,37 @@ Notes:
 - Omit the volume for ephemeral demos (progress resets on container removal).
 - Override cookie secret: `-e COOKIE_SECRET=your-secret`.
 - Change port: `-e PORT=4000 -p 4000:4000`.
+
+## Self-Host (Published Image)
+
+Tagged releases publish a verifiable container image to GitHub Container Registry, built for `linux/amd64`.
+
+```bash
+docker pull ghcr.io/sunnypatell/securebank-ctf:1.0.0
+docker run --rm -p 3000:3000 -v securebank-data:/app/data \
+  ghcr.io/sunnypatell/securebank-ctf:1.0.0
+# http://localhost:3000  (demo creds: admin / admin123)
+```
+
+Or with Docker Compose (`docker-compose.yml` is included in the repo root):
+
+```bash
+docker compose up
+```
+
+Apple Silicon: the image is amd64 and runs on arm64 hosts via Docker's runtime emulation. Building from source on arm64 is a known issue tracked in `CHANGELOG.md`.
+
+### Verify the Release (Supply Chain)
+
+Every published image is signed with Sigstore and carries SLSA build provenance plus an SBOM attestation, both bound to the image digest. Verify before running:
+
+```bash
+gh attestation verify \
+  oci://ghcr.io/sunnypatell/securebank-ctf:1.0.0 \
+  --repo sunnypatell/securebank-ctf
+```
+
+> Reminder: this app is intentionally vulnerable. Self-host for labs only and never expose it to the public internet. See `DISCLAIMER.md`.
 
 ## Project Structure
 
@@ -354,7 +386,7 @@ Key components: navigation, transaction cards, FAQ accordion, search and form co
 
 ## Security Policy
 
-This repo intentionally includes insecure patterns for learning. For unintended issues, see `SECURITY.md` for responsible disclosure. Please do not open public exploit details unrelated to the intended challenges.
+This repo intentionally includes insecure patterns for learning. For unintended issues, see `SECURITY.md` for responsible disclosure. Please do not open public exploit details unrelated to the intended challenges. See `DISCLAIMER.md` for authorized-use terms and `CHANGELOG.md` for release history.
 
 ## Contributing
 
