@@ -153,6 +153,7 @@ jobs:
 
       - name: Attest build provenance (SLSA, sigstore-signed)
         if: ${{ !inputs.dry_run }}
+        id: attest_prov
         uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4.1.0
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
@@ -161,6 +162,7 @@ jobs:
 
       - name: Attest SBOM
         if: ${{ !inputs.dry_run }}
+        id: attest_sbom
         uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
@@ -214,7 +216,12 @@ jobs:
             ```
 
             ### verify supply-chain provenance
-            every image is signed with sigstore and carries slsa build provenance + an sbom attestation, both bound to the digest below.
+            every image is signed with sigstore and carries slsa build provenance + an sbom attestation, both bound to the digest below. open them on the web:
+
+            - [build provenance attestation](${{ steps.attest_prov.outputs['attestation-url'] }})
+            - [sbom attestation](${{ steps.attest_sbom.outputs['attestation-url'] }})
+
+            or verify a pulled image locally:
             ```bash
             gh attestation verify \
               oci://${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }} \
