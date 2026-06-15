@@ -27,7 +27,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/better-sqlite3": "^7.6.12",
-    "@types/estree": "^1.0.6",
+    "@types/estree": "^1.0.9",
     "@types/node": "^20.17.24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
